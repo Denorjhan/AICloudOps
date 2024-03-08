@@ -3,6 +3,9 @@ from agency_swarm.agency.agency import Agency
 from AwsSdkAgent import AwsSdkAgent
 from ProxyAgent import ProxyAgent
 from ExecutorAgent import ExecutorAgent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 proxy_agent = ProxyAgent()
 aws_sdk_agent = AwsSdkAgent()

@@ -3,6 +3,7 @@ from agency_swarm.tools import CodeInterpreter
 from agency_swarm.tools.coding import ChangeLines, ReadFile, WriteFiles
 from AwsSdkAgent.tools import GetAmiId, WriteCode
 from ExecutorAgent.tools import ExecutePyCode
+import os
 
 
 class AwsSdkAgent(Agent):
@@ -13,5 +14,5 @@ class AwsSdkAgent(Agent):
             instructions="./SOP.md",
             #instructions="./instructions.md",
             tools=[CodeInterpreter, ReadFile, WriteCode],
-            model="gpt-3.5-turbo-0125",
+            model=os.environ.get("OPENAI_MODEL"),
         )

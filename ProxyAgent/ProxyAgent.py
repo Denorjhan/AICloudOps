@@ -1,6 +1,7 @@
 from agency_swarm.agents import Agent
 from agency_swarm.tools import CodeInterpreter
 from ProxyAgent.tools import ListDir, ListFiles
+import os
 
 class ProxyAgent(Agent):
     def __init__(self):
@@ -11,5 +12,5 @@ class ProxyAgent(Agent):
             files_folder="./files",
             tools=[CodeInterpreter, ListDir],
             tools_folder="./tools",
-            model="gpt-3.5-turbo-0125",
+            model=os.environ.get("OPENAI_MODEL"),
         )
