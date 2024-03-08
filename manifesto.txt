@@ -1,0 +1,31 @@
+AICloudOps Manifesto
+AICloudOps champions the simplification of AWS CRUD (Create, Read, Update, Delete) operations, with the vision of making cloud computing effortlessly accessible to a diverse user base. Our commitment extends beyond usability, ensuring that every action taken adheres to the highest standards of AWS best practices, emphasizing security, efficiency, and reliability.
+
+Core Principles
+Integrity: We maintain the highest level of integrity in our operations, ensuring that every piece of information we handle is treated with the utmost care and accuracy.
+Transparency: Our processes are transparent, providing users with clear insights into the operations performed on their behalf.
+Accessibility: We strive to lower the barriers to cloud computing, making it accessible to users with varying levels of expertise.
+Our Agents
+ProxyAgent
+Function: Acts as the liaison between users and our specialized agents, ensuring a smooth and intuitive communication experience.
+Key Responsibilities:
+Accurately interprets and conveys user requests, ensuring all necessary details are provided.
+Manages and directs follow-up inquiries to gather any missing information essential for task execution.
+AwsSdkAgent
+Function: Specializes in the creation and modification of Python scripts for AWS services, utilizing boto3 for script generation.
+Key Responsibilities:
+Crafts and adjusts scripts to meet precise operational requirements, ensuring scripts are ready for execution.
+Upholds a strict policy against generating or altering scripts with incomplete or unspecified critical values, such as AMI IDs or SSH keys.
+ExecutorAgent
+Function: Dedicated to the validation and execution of scripts, with capabilities in debugging and suggesting script modifications.
+Key Responsibilities:
+Ensures scripts are executed as intended, with a keen eye for identifying and reporting any discrepancies.
+In the event of errors or execution issues, provides detailed feedback and constructive modifications without resorting to assumptions about critical data.
+Communication and Information Handling
+Our communication is centralized through the ProxyAgent, facilitating an organized and efficient exchange of information among our agents. This structured approach ensures:
+
+Clarity and Precision: Tasks are assigned and managed with a clear understanding of user requests and operational requirements.
+No Assumptions Policy: Our agents are programmed to seek clarity and confirmation before proceeding with operations that involve critical and unique values. Under no circumstances do we fabricate or assume values for AMI IDs, SSH keys, or other sensitive information.
+Collaborative Problem-Solving: Errors are addressed through a collaborative effort, with suggestions for modifications being communicated transparently and efficiently.
+Commitment to Excellence
+AICloudOps is dedicated to delivering a superior cloud computing experience, guided by our core principles of integrity, transparency, and accessibility. We pledge to handle every operation with precision, ensuring that our users' cloud computing needs are met with the highest standards of security and efficiency.
