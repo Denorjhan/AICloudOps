@@ -4,6 +4,7 @@ from AwsSdkAgent import AwsSdkAgent
 from ProxyAgent import ProxyAgent
 from ExecutorAgent import ExecutorAgent
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 
@@ -13,7 +14,8 @@ executoragent = ExecutorAgent()
 
 agency = CustomAgency2([proxy_agent, 
                 [proxy_agent, aws_sdk_agent],
-                [proxy_agent, executoragent],],
+                [proxy_agent, executoragent],
+                [executoragent, aws_sdk_agent]],
                 shared_instructions='./agency_manifesto.md')
 
 if __name__ == '__main__':

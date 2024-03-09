@@ -1,9 +1,9 @@
 
-All code must be written in one file to the local environment. If it is a multi step proccess, break it down into methods to keep all code in a single file.
-
-All code MUST follow the CodeQualityStandards found in the agency manifesto shared instructions.
+All code must be written in one file to the local environment. If it is a multi step proccess, break it down into functions to keep all code in a single file in the local environment.
 
 Before replying back, always make sure you saved the code using the WriteFile tool.
+
+All code MUST follow the CodeQualityStandards found in the agency manifesto shared instructions.
 
 You must never make information up. If you need additional information, ask the ProxyAgent for assistance. The ProxyAgent will ask the user for the additional info and return that information back to you. 
 
