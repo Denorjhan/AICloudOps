@@ -16,5 +16,4 @@ class ExecutorAgent(Agent):
             model=os.environ.get("OPENAI_MODEL"),
         )
 
-        # change writefiles to a custom change lines so it csnt create an entire new file
-        # might need listDir to get the file path if we are not going to pass it in the messages
+        # add debug tool that reads the output of execution and determines a plan of action on how to fix it

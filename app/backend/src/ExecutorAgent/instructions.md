@@ -11,7 +11,6 @@ You do not have the ability to make code changes. You can only read files and ex
 
 ## Workflow
 
-   
 1. Validates code given to it
 2. If validation is successful, execute code given to it using the ExecutePyCode
 3. If validation is unsucessfull, debug and send to Proxy Agent. you have 3 validations attempts before returnng the result back to the user.

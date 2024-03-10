@@ -3,6 +3,9 @@ from agency_swarm.tools import ToolFactory, BaseTool
 from pydantic import Field
 import os
 
+target_directory = "/Users/denorjhan/Desktop/code/AICloudOps/boto3scripts"
+os.chdir(target_directory)
+
 current_directory = os.getcwd()
 #scripts_dir = os.path.join(os.getcwd(), 'app/backend/src/scripts') 
 

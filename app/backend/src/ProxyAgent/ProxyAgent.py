@@ -11,6 +11,6 @@ class ProxyAgent(Agent):
             instructions="./instructions.txt",
             files_folder="./files",
             tools=[CodeInterpreter, ListDir],
-            tools_folder="./tools",
+            #tools_folder="./tools",
             model=os.environ.get("OPENAI_MODEL"),
         )
