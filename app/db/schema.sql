@@ -1,32 +1,18 @@
+CREATE EXTENSION IF NOT EXISTS vector;
 
 
-
-
--- Create contexts table
-CREATE TABLE IF NOT EXISTS contexts (
-    context_id SERIAL PRIMARY KEY,
-    context_vector BYTEA,  -- Change data type to BYTEA for binary data
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Create operations table
-CREATE TABLE IF NOT EXISTS operations (
-    operation_id SERIAL PRIMARY KEY,
-    context_id INT REFERENCES contexts(context_id),
-    operation_type VARCHAR(255),
-    description TEXT,
-    file_reference VARCHAR(255),
-    agent_id INT,
-    status VARCHAR(50),
+CREATE TABLE scripts (
+    script_id SERIAL PRIMARY KEY,
+    script_name VARCHAR(127) NOT NULL UNIQUE,
+    script_content TEXT NOT NULL UNIQUE CHECK (length(script_content) > 0),  -- check datatype
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    executed_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    CHECK (created_at <= CURRENT_TIMESTAMP), -- Preventing future 'created_at' dates
+    CHECK (executed_at IS NULL OR executed_at <= CURRENT_TIMESTAMP)
 );
 
--- Create agents table
-CREATE TABLE IF NOT EXISTS agents (
-    agent_id SERIAL PRIMARY KEY,
-    agent_name VARCHAR(255),
-    agent_type VARCHAR(255),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
 
+CREATE TABLE vectors (
+    vector_id INTEGER PRIMARY KEY REFERENCES scripts(script_id) ON DELETE CASCADE,
+    vector VECTOR(1536) NOT NULL
+);

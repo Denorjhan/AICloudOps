@@ -4,7 +4,6 @@ from AwsSdkAgent import AwsSdkAgent
 from ProxyAgent import ProxyAgent
 from ExecutorAgent import ExecutorAgent
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
