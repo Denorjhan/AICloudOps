@@ -5,14 +5,14 @@ from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
 
-class Script(Base):
+class Scripts(Base):
     __tablename__ = 'scripts'
 
     script_id = Column(Integer, primary_key=True)
     script_name = Column(VARCHAR(127), nullable=False, unique=True)
     script_content = Column(Text, nullable=False, unique=True)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default='now()')
-    executed_at = Column(TIMESTAMP(timezone=True)
+    executed_at = Column(TIMESTAMP(timezone=True))
     
     # Constraints
     __table_args__ = (
@@ -22,11 +22,11 @@ class Script(Base):
     )
 
 
-class Vector(Base):
+class Vectors(Base):
     __tablename__ = 'vectors'
 
     vector_id = Column(Integer, ForeignKey('scripts.script_id', ondelete="CASCADE"), primary_key=True)
     vector = Column(Vector(1536), nullable=False)
 
     # Relationship
-    script = relationship('Script', backref='vectors')
+    script = relationship('Scripts', backref='vectors')
