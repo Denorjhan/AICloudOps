@@ -1,8 +1,7 @@
 import os
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from models import Base  # Make sure to import your Base from models.py
+
 
 import dotenv
 dotenv.load_dotenv(override=True)
