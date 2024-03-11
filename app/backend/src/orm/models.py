@@ -12,7 +12,7 @@ class Script(Base):
     script_name = Column(VARCHAR(127), nullable=False, unique=True)
     script_content = Column(Text, nullable=False, unique=True)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default='now()')
-    executed_at = Column(TIMESTAMP(timezone=True))
+    executed_at = Column(TIMESTAMP(timezone=True)
     
     # Constraints
     __table_args__ = (
