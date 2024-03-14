@@ -11,7 +11,7 @@ proxy_agent = ProxyAgent()
 aws_sdk_agent = AwsSdkAgent()
 executoragent = ExecutorAgent()
 
-agency = CustomAgency2([proxy_agent, 
+agency = CustomAgency2([aws_sdk_agent, 
                 [proxy_agent, aws_sdk_agent],
                 [proxy_agent, executoragent],
                 [executoragent, aws_sdk_agent]],
@@ -19,4 +19,4 @@ agency = CustomAgency2([proxy_agent,
 
 if __name__ == '__main__':
     agency.run_demo() # CLI demo
-  #  agency.demo_gradio() # Browser demo
+    #agency.demo_gradio() # Browser demo

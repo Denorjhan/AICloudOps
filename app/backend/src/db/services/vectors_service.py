@@ -15,5 +15,6 @@ def insert_vector(script_id, vector):
     new_vector = Vectors(vector_id=script_id, vector=vector)
     session.add(new_vector)
     session.commit()
+    session.refresh(new_vector)
     session.close()
     return new_vector.vector_id
