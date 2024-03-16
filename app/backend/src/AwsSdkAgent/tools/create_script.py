@@ -13,7 +13,7 @@ if parent_dir not in sys.path:
     sys.path.append(parent_dir)
 
 from db.services.scripts_service import insert_script, get_all_scripts, get_script_content_by_id
-from db.services.vectors_service import insert_vector, create_embedding
+from db.services.vectors_service import insert_vector, create_embedding, query_search
 
 
 class File(BaseTool):
@@ -65,5 +65,19 @@ class CreateScript(BaseTool):
         return str(outputs)
     
 # create an instance of File
-f = File(file_name="hi_wor.py", body="print('hi')")
-f.run()
+#f = File(file_name="hi_wor.py", body="print('hi')")
+#f.run()
+
+# loop through 3 files called file1, file2, file3 and create a File instance for each with  body as the file contentes
+"""files = []
+for i in range(1, 4):
+    file_name = f"file{i}.py"
+    with open(file_name, 'r') as file:
+        body = file.read()
+    files.append(File(file_name=file_name, body=body))
+    
+for file in files:
+    file.run()"""
+    
+search = query_search("list all my objects and buckets")
+print(search)

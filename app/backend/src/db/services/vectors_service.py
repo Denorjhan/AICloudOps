@@ -1,6 +1,8 @@
 from orm.models import Vectors
 from orm.connection import Session
 from openai import OpenAI
+from sqlalchemy import text
+import time
 
 client = OpenAI()
 
@@ -18,3 +20,18 @@ def insert_vector(script_id, vector):
     session.refresh(new_vector)
     session.close()
     return new_vector.vector_id
+ 
+def query_search(query: str):
+    session = Session()
+    query = create_embedding(query)
+    sql = text(f"""
+        SELECT vector_id
+        FROM vectors
+        ORDER BY vector <-> '{query}'
+        LIMIT 5;
+    """)
+    start = time.time()
+    results = session.execute(sql).fetchall()
+    end = time.time()
+    print("################", end - start)
+    return results

@@ -11,7 +11,7 @@ proxy_agent = ProxyAgent()
 aws_sdk_agent = AwsSdkAgent()
 executoragent = ExecutorAgent()
 
-agency = CustomAgency2([aws_sdk_agent, 
+agency = CustomAgency2([proxy_agent, 
                 [proxy_agent, aws_sdk_agent],
                 [proxy_agent, executoragent],
                 [executoragent, aws_sdk_agent]],
