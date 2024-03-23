@@ -21,7 +21,7 @@ from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor
 import sys
 import datetime
 import os
-from .queue_producer import QueuePublisher
+from .queue_producer import RabbitMQPublisher
 
 if sys.version_info >= (3, 11):
     from typing import Self
@@ -92,7 +92,6 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
 
         # identiy the shared volume and the mount point
         shared_volume = get_volume_name()
-        print("##############", shared_volume)
         container_work_dir = Path(container_work_dir).absolute()
         
         self._container = client.containers.create(
@@ -203,7 +202,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         print("\n#############", exec_result)
         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
         
-        with QueuePublisher() as queue:
+        with RabbitMQPublisher() as queue:
             queue.log_execution(code_file, last_exit_code, code_output)
         
         return exec_result

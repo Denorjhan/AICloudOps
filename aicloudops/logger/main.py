@@ -1,11 +1,22 @@
 from orm.database import init_db
+from messaging.consumer import RabbitMQConsumer
+
+
 
 def main():
-    init_db()
+    print("in main function!!!!")
     #listen for msgs, processes hash, insert in db
     
-    pass
+    
+    with RabbitMQConsumer() as q: 
+        q.start_consuming() 
+        
 
 
 if __name__ == "__main__":
-    main() 
+    try:
+        init_db()
+        print("sdfas")
+        main() 
+    except Exception as e:
+        print(f"An error occurred: {e}")

@@ -14,7 +14,6 @@ DB_NAME = os.getenv('POSTGRES_DB', 'pg')
 
 # Construct the database URI
 DATABASE_URI = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
-print(DATABASE_URI)
 
 # Engine creation with connection pooling 
 engine = create_engine(DATABASE_URI, echo=True)
@@ -32,3 +31,4 @@ def init_db():
     if not required_tables.issubset(existing_tables):
         from .models import code_files, execution_log # Required for create_all to know what tables to create
         Base.metadata.create_all(bind=engine) # idempotent so multiple calls are safe
+

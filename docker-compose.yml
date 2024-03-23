@@ -50,8 +50,10 @@ services:
       context: aicloudops/logger
       dockerfile: Dockerfile
     container_name: logger
+    tty: true
+    # stdin_open: true
     environment:
-      DB_HOST: postgres
+      DB_HOST: postgres #db service name
     env_file:
       - aicloudops/db/.env # use the same .env file as the postgres service for making the db connection
     depends_on:

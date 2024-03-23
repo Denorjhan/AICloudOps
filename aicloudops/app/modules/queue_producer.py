@@ -1,11 +1,8 @@
 import pika
 import json
 
-def convert_to_dict():
-    pass
-
-class QueuePublisher:
-    def __init__(self, host='localhost', queue_name='my_queue'):
+class RabbitMQPublisher:
+    def __init__(self, host='rabbitmq', queue_name='my_queue'):
         self.queue_name = queue_name
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
         self.channel = self.connection.channel()
