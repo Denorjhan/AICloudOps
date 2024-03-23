@@ -1,0 +1,97 @@
+#! start with "docker compose up -d && docker attach app"
+
+version: "3.8"
+
+services:
+  docker-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: docker-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Mount as read-only for security
+    ports:
+      - "2375:2375" # Ensure this port is not exposed to the public for security reasons
+    environment:
+      BUILD: 1
+      IMAGES: 1
+      CONTAINERS: 1
+      VOLUMES: 1
+      NETWORKS: 1
+      POST: 1
+      EXEC: 1
+    networks:
+      - aicloudops
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672" # RabbitMQ service port
+      - "15672:15672" # Management console port
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - aicloudops
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    env_file:
+      - aicloudops/db/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - exec_logs:/var/lib/postgresql/data
+    # restart: always
+    networks:
+      - aicloudops
+
+  logger:
+    build:
+      context: aicloudops/logger
+      dockerfile: Dockerfile
+    container_name: logger
+    environment:
+      DB_HOST: postgres
+    env_file:
+      - aicloudops/db/.env # use the same .env file as the postgres service for making the db connection
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - aicloudops
+
+  app:
+    build:
+      context: aicloudops/app
+      dockerfile: Dockerfile
+    container_name: app
+    volumes:
+      - ai_code:/tmp:nocopy
+    tty: true
+    stdin_open: true
+    environment:
+      - DOCKER_HOST=tcp://docker-proxy:2375
+      - VOLUME_NAME=ai_code
+    env_file:
+      - aicloudops/app/.env
+    depends_on:
+      - docker-proxy
+      - rabbitmq
+      - logger
+    networks:
+      - aicloudops
+
+volumes:
+  ai_code:
+  rabbitmq_data:
+  exec_logs:
+
+networks:
+  aicloudops:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: app_br
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/28
