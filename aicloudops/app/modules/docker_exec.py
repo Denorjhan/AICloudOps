@@ -93,6 +93,10 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         # identiy the shared volume and the mount point
         shared_volume = get_volume_name()
         container_work_dir = Path(container_work_dir).absolute()
+        creds = {
+            "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
+            "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY")
+        }
         
         self._container = client.containers.create(
             image,
@@ -102,6 +106,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             auto_remove=auto_remove,
             volumes={str(shared_volume):{"bind": str(container_work_dir), "mode": "rw"}},
             working_dir=str(container_work_dir),
+            environment=creds,        
         )
         self._container.start()
  
