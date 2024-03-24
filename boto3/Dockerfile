@@ -1,5 +1,5 @@
 # Use the official Python image, based on Debian, as the base image
-FROM python:3.10-slim
+FROM python:3.10-slim-buster
 
 # Set ARG variables
 ARG USER=code_executor

@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 from .base import Base
 
 
-class ExecutionLog(Base):
+class ExecutionLogs(Base):
     __tablename__ = 'execution_logs'
 
     execution_id = Column(Integer, primary_key=True)

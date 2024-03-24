@@ -40,7 +40,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - exec_logs:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     # restart: always
     networks:
       - aicloudops
@@ -50,6 +50,8 @@ services:
       context: aicloudops/logger
       dockerfile: Dockerfile
     container_name: logger
+    volumes:
+      - ai_code:/tmp:nocopy
     tty: true
     # stdin_open: true
     environment:
@@ -86,7 +88,7 @@ services:
 volumes:
   ai_code:
   rabbitmq_data:
-  exec_logs:
+  pg_data:
 
 networks:
   aicloudops:

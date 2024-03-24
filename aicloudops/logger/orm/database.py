@@ -2,15 +2,17 @@ import os
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, scoped_session
 import dotenv
+
+from .models import execution_logs
 from .models.base import Base
 
 dotenv.load_dotenv(override=True)
 
 DB_USER = os.getenv('POSTGRES_USER', 'myuser')
 DB_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'mypassword')
+DB_NAME = os.getenv('POSTGRES_DB', 'pg')
 DB_HOST = os.getenv('DB_HOST', 'localhost')
 DB_PORT = os.getenv('DB_PORT', '5432')  
-DB_NAME = os.getenv('POSTGRES_DB', 'pg')
 
 # Construct the database URI
 DATABASE_URI = f'postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
@@ -29,6 +31,6 @@ def init_db():
     existing_tables = set(inspector.get_table_names())
 
     if not required_tables.issubset(existing_tables):
-        from .models import code_files, execution_log # Required for create_all to know what tables to create
+        from .models import code_files # Required for create_all to know what tables to create
         Base.metadata.create_all(bind=engine) # idempotent so multiple calls are safe
 

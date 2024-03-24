@@ -165,6 +165,10 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             try:
                 # Check if there is a filename comment
                 filename = _get_file_name_from_content(code, Path("/tmp"))
+                file_uuid = uuid.uuid4()
+                if filename.endswith('.py'):
+                    filename = filename[:-3]  # Remove the .py extension
+                filename = f"{filename}_{file_uuid}.py"  # Append UUID and add .py back
             except ValueError:
                 return CommandLineCodeResult(exit_code=1, output="Filename is not in the workspace")
 
