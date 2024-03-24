@@ -9,7 +9,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro # Mount as read-only for security
     ports:
-      - "2375:2375" # Ensure this port is not exposed to the public for security reasons
+      - "2375:2375"
     environment:
       BUILD: 1
       IMAGES: 1
@@ -35,13 +35,16 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
-    env_file:
-      - aicloudops/db/.env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_PORT: ${DB_PORT}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-    # restart: always
+    restart: always
     networks:
       - aicloudops
 
@@ -53,11 +56,12 @@ services:
     volumes:
       - ai_code:/tmp:nocopy
     tty: true
-    # stdin_open: true
     environment:
-      DB_HOST: postgres #db service name
-    env_file:
-      - aicloudops/db/.env # use the same .env file as the postgres service for making the db connection
+      DB_HOST: postgres # postgres service name
+      DB_PORT: ${DB_PORT}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     depends_on:
       - postgres
       - rabbitmq
@@ -74,10 +78,12 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - DOCKER_HOST=tcp://docker-proxy:2375
-      - VOLUME_NAME=ai_code
-    env_file:
-      - aicloudops/app/.env
+      DOCKER_HOST: tcp://docker-proxy:2375
+      VOLUME_NAME: ai_code
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_MODEL: ${OPENAI_MODEL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SEcrET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     depends_on:
       - docker-proxy
       - rabbitmq
