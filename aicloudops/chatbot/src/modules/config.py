@@ -9,7 +9,7 @@ dotenv.load_dotenv()
 # Configuration for the LLM
 AI_CONFIG = {
     "config_list": [
-        {"model": os.environ["OPENAI_MODEL"], "api_key": os.environ["OPENAI_API_KEY"], "cache_seed": 100}
+        {"model": os.environ["OPENAI_MODEL"], "api_key": os.environ["OPENAI_API_KEY"], "cache_seed": None}
     ]
 }
 

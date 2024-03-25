@@ -1,4 +1,4 @@
-#! start with "docker compose up -d && docker attach app"
+#! start with "docker compose up -d && docker attach chatbot"
 
 version: "3.8"
 
@@ -68,11 +68,11 @@ services:
     networks:
       - aicloudops
 
-  app:
+  chatbot:
     build:
-      context: aicloudops/app
+      context: aicloudops/chatbot
       dockerfile: Dockerfile
-    container_name: app
+    container_name: chatbot
     volumes:
       - ai_code:/tmp:nocopy
     tty: true

@@ -25,5 +25,5 @@ COPY . /app
 RUN chmod +x wait_for_rabbitmq.sh
 
 ENTRYPOINT [ "./wait_for_rabbitmq.sh" ] 
-CMD ["python", "main.py"]  
+CMD ["python", "src/main.py"]  
 

@@ -38,4 +38,4 @@ COPY --chown=${USER}:${USER} . .
 
 
 # Command to run the application
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]
