@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatbot-deployment
+  labels:
+    app: chatbot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chatbot
+  template:
+    metadata:
+      labels:
+        app: chatbot
+    spec:
+      containers:
+      - name: chatbot
+        image: public.ecr.aws/c6w3t1p6/aicloudops-chatbot:latest
+        stdin: true
+        tty: true 
+        ports:
+        - containerPort: 80  
+        resources:
+          requests:
+            memory: "64Mi"  
+            cpu: "250m"  
+          limits:
+            memory: "128Mi"  # Maximum amount of memory the container can use
+            cpu: "500m"  # Maximum amount of CPU the container can use
+        env:
+        - name: VOLUME_NAME
+          value: "ai_code" # decouple into a config map
+        - name: DOCKER_HOST
+          value: "tcp://docker-proxy-svc:2375"
+        - name: OPENAI_MODEL
+          value: "gpt-3.5-turbo-0125"  
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env  
+              key: OPENAI_API_KEY
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env  
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_DEFAULT_REGION
+          value: "ca-central-1"  

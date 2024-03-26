@@ -8,7 +8,7 @@ from autogen.coding import DockerCommandLineCodeExecutor
 def setup_proxy_agent():
     # Setup Docker container for safe code execution
     docker_config = {
-        "image": "boto3",  # Use a custom boto3 image
+        "image": "public.ecr.aws/c6w3t1p6/boto3-code-exec:latest",  # Use a custom boto3 image
         "timeout": 60,
         "auto_remove": True,
         "stop_container": True,

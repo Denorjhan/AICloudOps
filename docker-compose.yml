@@ -11,13 +11,13 @@ services:
     ports:
       - "2375:2375"
     environment:
-      BUILD: 1
-      IMAGES: 1
-      CONTAINERS: 1
-      VOLUMES: 1
-      NETWORKS: 1
-      POST: 1
-      EXEC: 1
+      BUILD: 1 # Allows building of Docker images
+      IMAGES: 1 # Allows listing and pulling of Docker images
+      CONTAINERS: 1 # Allows listing, inspecting, stopping, and starting of Docker containers
+      VOLUMES: 1 # Allows listing, inspecting, and managing Docker volumes
+      NETWORKS: 1 # Allows listing, inspecting, and managing Docker networks
+      POST: 1 # Allows HTTP POST requests, enabling creation and modification operations
+      EXEC: 1 # Allows executing commands inside running containers
     networks:
       - aicloudops
 

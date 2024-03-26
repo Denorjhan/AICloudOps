@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: docker-proxy-svc
+spec:
+  selector:
+    app: docker-proxy
+  ports:
+  - protocol: TCP
+    port: 2375
+    targetPort: 2375
