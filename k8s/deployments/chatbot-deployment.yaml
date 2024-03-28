@@ -19,8 +19,8 @@ spec:
         image: public.ecr.aws/c6w3t1p6/aicloudops-chatbot:latest
         stdin: true
         tty: true 
-        # ports:
-        # - containerPort: 80  
+        ports:
+        - containerPort: 8080
         resources:
           requests:
             memory: "64Mi"  
