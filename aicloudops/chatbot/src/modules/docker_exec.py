@@ -69,8 +69,8 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             stop_container (bool, optional): If true, will automatically stop the container when stop is called, when the context manager exits, or when the Python process exits with atexit. Defaults to True.
         """
 
+        print("Creating container...")
 
-        
         if timeout < 1:
             raise ValueError("Timeout must be greater than or equal to 1.")
 
@@ -98,6 +98,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
             "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION")
         }
+        print(shared_volume)
         
         self._container = client.containers.create(
             image,
@@ -110,6 +111,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             environment=creds,        
         )
         self._container.start()
+        print("container started...")
  
         _wait_for_ready(self._container)
 
@@ -212,8 +214,8 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         print("\n#############", exec_result)
         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
         
-        with RabbitMQPublisher() as queue:
-            queue.log_execution(code_file, last_exit_code, code_output)
+        # with RabbitMQPublisher() as queue:
+        #     queue.log_execution(code_file, last_exit_code, code_output)
         
         return exec_result
 

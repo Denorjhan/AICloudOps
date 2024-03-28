@@ -3,6 +3,10 @@ from .docker_exec import ContainerPathDockerExecutor
 from autogen import ConversableAgent
 from autogen.coding import DockerCommandLineCodeExecutor
 
+# from async_agent import AsyncAgent
+# from gui import chat_interface
+
+
 
 # Create agent for code execution
 def setup_proxy_agent():
@@ -20,6 +24,7 @@ def setup_proxy_agent():
         llm_config=AI_CONFIG,  # Disable LLM for code execution agent
         code_execution_config={"executor": execution_container},  # use DockerCommandLineCodeExecutor when running locally and ContainerPathDockerExecutor when running in a container
         human_input_mode="ALWAYS",
+        # chat_interface=chat_interface
     )
     
     return proxy_agent

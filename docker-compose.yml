@@ -3,6 +3,14 @@
 version: "3.8"
 
 services:
+  # ttyd:
+  #   image: tsl0922/ttyd:latest
+  #   command: ttyd -p 8080 bash # Just start bash, letting the user run the chatbot manually, or
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - chatbot
+
   docker-proxy:
     image: tecnativa/docker-socket-proxy
     container_name: docker-proxy
@@ -72,6 +80,8 @@ services:
     build:
       context: aicloudops/chatbot
       dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
     container_name: chatbot
     volumes:
       - ai_code:/tmp:nocopy
