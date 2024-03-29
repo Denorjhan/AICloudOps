@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: chatbot-pvc
+  name: ai-code-pvc
 spec:
-  storageClassName: manual
+  storageClassName: standard
   accessModes:
     - ReadWriteMany
   resources:
     requests:
-      storage: 1Gi
+      storage: 500Mi
   selector:
     matchLabels:
       type: local
-  volumeMode: Filesystem

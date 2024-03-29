@@ -38,9 +38,9 @@ def _wait_for_ready(container: Container, timeout: int = 60, stop_time: int = 0.
     if container.status != "running":
         raise ValueError("Container failed to start")
 
-def get_volume_name():
-    name = os.getenv("VOLUME_NAME")
-    return f"project_{name}" if name else "ai_code"
+# def get_volume_name():
+#     name = os.getenv("VOLUME_NAME")
+#     return f"project_{name}" if name else "ai_code"
     
 
 __all__ = ("ContainerPathDockerExecutor",)
@@ -69,7 +69,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             stop_container (bool, optional): If true, will automatically stop the container when stop is called, when the context manager exits, or when the Python process exits with atexit. Defaults to True.
         """
 
-        print("Creating container...")
+        print("Creating execution container...")
 
         if timeout < 1:
             raise ValueError("Timeout must be greater than or equal to 1.")
@@ -91,14 +91,15 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             container_name = f"code-exec-{uuid.uuid4()}"
 
         # identiy the shared volume and the mount point
-        shared_volume = get_volume_name()
+        volume_name = os.getenv("VOLUME_NAME")
+        print(volume_name)
         container_work_dir = Path(container_work_dir).absolute()
         creds = {
             "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
             "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
             "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION")
         }
-        print(shared_volume)
+        print(container_work_dir)
         
         self._container = client.containers.create(
             image,
@@ -106,12 +107,12 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             entrypoint="/bin/sh",
             tty=True,
             auto_remove=auto_remove,
-            volumes={str(shared_volume):{"bind": str(container_work_dir), "mode": "rw"}},
+            volumes={str(volume_name):{"bind": str(container_work_dir), "mode": "rw"}},
             working_dir=str(container_work_dir),
             environment=creds,        
         )
         self._container.start()
-        print("container started...")
+        print("Execution container started...")
  
         _wait_for_ready(self._container)
 
@@ -164,7 +165,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             raise ValueError("No code blocks to execute.")
 
         outputs = []
-        files = []
+        files = [] 
         last_exit_code = 0
         for code_block in code_blocks:
             lang = code_block.language
@@ -210,8 +211,8 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         
         exec_result = CommandLineCodeResult(exit_code=last_exit_code, output=code_output, code_file=code_file)
         
-        print("***************", type(last_exit_code), type(code_output), type(code_file), type(exec_result))
-        print("\n#############", exec_result)
+        # print("***************", type(last_exit_code), type(code_output), type(code_file), type(exec_result))
+        # print("\n#############", exec_result)
         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
         
         # with RabbitMQPublisher() as queue:

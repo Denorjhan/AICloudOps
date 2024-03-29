@@ -21,6 +21,7 @@ RUN apt-get update && \
 RUN wget https://github.com/tsl0922/ttyd/releases/download/1.7.5/ttyd.x86_64 -O /usr/local/bin/ttyd && \
     chmod +x /usr/local/bin/ttyd
 
+
 # Create a non-root user to start the app, avoiding setting up unnecessary directories as root
 ARG USER=autogen
 RUN useradd -m -s /bin/bash ${USER} 
@@ -42,6 +43,6 @@ COPY --chown=${USER}:${USER} . .
 EXPOSE 7681
 
 # Command to run the application
-CMD ["ttyd", "--writable", "-p", "8080", "python", "src/main.py"]
+CMD ["ttyd", "--writable", "python", "src/main.py"]
 # CMD ["ttyd", "-p", "7681", "bash"]
 
