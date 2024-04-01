@@ -9,5 +9,5 @@ CREATE TABLE execution_logs (
     execution_time TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     exit_code INT NOT NULL,
     execution_output TEXT DEFAULT '',
-    FOREIGN KEY (file_id) REFERENCES files(file_id)
+    FOREIGN KEY (file_id) REFERENCES code_files(file_id)
 );

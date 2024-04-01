@@ -4,20 +4,20 @@ metadata:
   name: chatbot-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-  # namespace: ingress-nginx
+    # namespace: ingress-nginx
 spec:
   ingressClassName: nginx
   rules:
-    # - host: www.example.com
+  # - host: www.example.com
   - http:
       paths:
-        - path: /deno(/|$)(.*)
-          pathType: Prefix
-          backend:
-            service:
-              name: chatbot-service
-              port:
-                number: 8080 #svc port
+      - path: /deno(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: chatbot-service
+            port:
+              number: 7681 #svc port
 
 
 # TLS IMPLEMENTATION

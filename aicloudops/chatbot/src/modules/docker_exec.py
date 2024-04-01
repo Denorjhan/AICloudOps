@@ -92,14 +92,12 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
 
         # identiy the shared volume and the mount point
         volume_name = os.getenv("VOLUME_NAME")
-        print(volume_name)
         container_work_dir = Path(container_work_dir).absolute()
         creds = {
             "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
             "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
             "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION")
         }
-        print(container_work_dir)
         
         self._container = client.containers.create(
             image,
@@ -211,8 +209,6 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         
         exec_result = CommandLineCodeResult(exit_code=last_exit_code, output=code_output, code_file=code_file)
         
-        # print("***************", type(last_exit_code), type(code_output), type(code_file), type(exec_result))
-        # print("\n#############", exec_result)
         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
         
         # with RabbitMQPublisher() as queue:

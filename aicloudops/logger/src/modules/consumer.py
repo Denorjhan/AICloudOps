@@ -2,11 +2,25 @@ import pika
 import json
 from  orm.services.code_files_services import insert_code_file
 from  orm.services.execution_logs_services import insert_execution_logs
+import os
 
 class RabbitMQConsumer:
-    def __init__(self, host='rabbitmq', queue_name='my_queue'):
+    def __init__(self, queue_name='my_queue'):
         self.queue_name = queue_name
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
+        self.host = os.getenv('RABBITMQ_HOST', 'rabbitmq')
+        self.port = int(os.getenv('RABBITMQ_PORT', 5672))  
+        self.username = os.getenv('RABBITMQ_USERNAME') 
+        self.password = os.getenv('RABBITMQ_PASSWORD')  
+
+        print(self.username)
+        print(self.password)
+        print(self.host)
+        print(self.port)
+        # Setup the connection parameters with credentials
+        credentials = pika.PlainCredentials(self.username, self.password)
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=self.host, port=self.port, credentials=credentials)
+        )
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=self.queue_name, durable=True)
 

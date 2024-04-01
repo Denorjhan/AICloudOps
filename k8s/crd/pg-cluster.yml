@@ -1,0 +1,28 @@
+apiVersion: kubegres.reactive-tech.io/v1
+kind: Kubegres
+metadata:
+  name: pgcluster
+  namespace: default
+spec:
+  replicas: 3
+  image: postgres:16.1
+  database:
+    size: 200Mi
+  # customConfig: pg-init-config # TODO: add custom scripts for schema and user creation
+  env:
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: chatbot-env
+        key: POSTGRES_PASSWORD
+
+  - name: POSTGRES_REPLICATION_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: chatbot-env
+        key: POSTGRES_REPLICATION_PASSWORD
+  - name: POSTGRES_DB
+    valueFrom:
+      secretKeyRef:
+        name: chatbot-env
+        key: POSTGRES_DB

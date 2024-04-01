@@ -18,6 +18,7 @@ import datetime
 from autogen.coding.utils import _get_file_name_from_content
 from autogen.coding.base import CommandLineCodeResult
 from autogen.coding import DockerCommandLineCodeExecutor
+from modules.queue_producer import RabbitMQPublisher
 
 from autogen.code_utils import TIMEOUT_MSG, _cmd
 from autogen.coding.base import CodeBlock, CodeExecutor, CodeExtractor
@@ -198,7 +199,14 @@ class K8sCodeExecutor(CodeExecutor):
             # Clean up job
             try:
                 self._api.delete_namespaced_job(name=job_name, namespace=self._namespace, propagation_policy='Background')
+                print("Job deleted successfully")
             except ApiException as e:
                 logging.warning(f"Failed to delete job {job_name}: {e}")
+        
+        execution_output = "\n".join(outputs)
+        
+        with RabbitMQPublisher() as queue:
+            queue.log_execution(str(code_path), last_exit_code, execution_output)
+            
+        return CommandLineCodeResult(exit_code=last_exit_code, output=execution_output)
 
-        return CommandLineCodeResult(exit_code=last_exit_code, output="\n".join(outputs))

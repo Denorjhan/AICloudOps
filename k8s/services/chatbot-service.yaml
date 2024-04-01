@@ -6,7 +6,7 @@ metadata:
     app: chatbot
 spec:
   ports:
-  - port: 8080 # service port
+  - port: 7681 # service port
     targetPort: 7681 # container port 
     protocol: TCP
     name: http

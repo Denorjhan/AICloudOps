@@ -1,34 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatbot-deployment
+  name: logger-deployment
   labels:
-    app: chatbot
+    app: logger
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: chatbot
+      app: logger
   template:
     metadata:
       labels:
-        app: chatbot
+        app: logger
     spec:
-      serviceAccountName: chatbot-service-account
       containers:
-      - name: chatbot
-        image: 'public.ecr.aws/c6w3t1p6/aicloudops-chatbot:latest'
-        stdin: true
-        tty: true
+      - name: logger
+        image: public.ecr.aws/c6w3t1p6/aicloudops-logger:latest
         ports:
-        - containerPort: 7681
+        - containerPort: 80
         # resources:
         #   requests:
-        #     memory: 64Mi
-        #     cpu: 250m
-        #   limits:
-        #     memory: 128Mi
         #     cpu: 500m
+        #     memory: 1Gi
+        #   limits:
+        #     cpu: 800m
+        #     memory: 1Gi
         env:
         - name: RABBITMQ_HOST
           valueFrom:
@@ -50,29 +47,33 @@ spec:
             secretKeyRef:
               name: rabbitmq-cluster-default-user
               key: password
-        - name: VOLUME_NAME
-          value: ai_code
-        - name: DOCKER_HOST
-          value: 'tcp://docker-proxy-svc:2375'
-        - name: OPENAI_MODEL
-          value: gpt-3.5-turbo-0125
-        - name: OPENAI_API_KEY
+        - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
               name: chatbot-env
-              key: OPENAI_API_KEY
-        - name: AWS_ACCESS_KEY_ID
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: chatbot-env
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
+              key: POSTGRES_PASSWORD
+        - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
               name: chatbot-env
-              key: AWS_SECRET_ACCESS_KEY
-        - name: AWS_DEFAULT_REGION
-          value: ca-central-1
+              key: POSTGRES_DB
+        - name: DB_HOST
+          value: pgcluster
+        - name: POSTGRES_REPLICATION_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env
+              key: POSTGRES_REPLICATION_PASSWORD
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env
+              key: DB_PORT
         volumeMounts:
         - name: code-files
           mountPath: /tmp
@@ -80,3 +81,7 @@ spec:
       - name: code-files
         persistentVolumeClaim:
           claimName: ai-code-pvc
+
+
+
+

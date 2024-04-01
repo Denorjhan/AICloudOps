@@ -1,7 +1,7 @@
 #!/bin/sh
 
-RABBITMQ_HOST="rabbitmq"
-RABBITMQ_PORT=5672
+# RABBITMQ_HOST="rabbitmq"
+# RABBITMQ_PORT=5672
 
 echo "Waiting for RabbitMQ to become available..."
 echo "${@}"
