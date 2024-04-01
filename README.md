@@ -16,7 +16,7 @@ This guide will walk you through setting up this microservice project using Dock
 First, clone the project repository to your local machine using Git.
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/Denorjhan/AICloudOps.git
 cd aicloudops
 ```
 

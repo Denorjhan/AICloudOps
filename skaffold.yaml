@@ -18,7 +18,6 @@ manifests:
   - k8s/crd/rabbit-cluster.yml
   - k8s/crd/pg-cluster.yml
   - k8s/deployments/chatbot-deployment.yaml
-  # - k8s/deployments/docker-proxy-deployment.yaml
   - k8s/deployments/logger-deployment.yml
   - k8s/ingress/chatbot-ingress.yaml
   - k8s/ingress/nginx-ingress-controller.1.10.0.yaml
