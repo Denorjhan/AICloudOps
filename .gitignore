@@ -146,3 +146,4 @@ settings.json
 aws/
 credentials
 .dev/
+.cursorignore

@@ -60,9 +60,10 @@ Once the project is running, the app will be available at http://localhost:8080.
 
 
 ## TODO:
-- [ ] Complete k8s manifests (configmaps,resource limits, liveness probes, ssl ingress)
-- [ ] optimize docker images (multistage builds, non-root user, etc)
+- [ ] Complete k8s manifests (configmaps, resource limits, liveness probes, tls ingress, etc.)
+- [ ] Optimize docker images (multistage builds, non-root user, etc)
 - [ ] Setup Prometheous & Grafana monitoring
 - [ ] Add Pytest for source code
 - [ ] CI/CD
+- [ ] Docs (architecture, design desicions)
 

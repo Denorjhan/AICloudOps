@@ -1,6 +1,7 @@
-# Dockerfile
-FROM python:3.10-slim-buster
+# Stage 1: Build environment
+FROM python:3.10-slim-buster as builder
 
+# prevent .pyc files for smaller size container size and prevent buffering stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
@@ -8,22 +9,25 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Install dependencies
+# Install system dependencies in a single RUN command to reduce layers
+# Clean up after to reduce image size
 RUN apt-get update && \
-    apt-get install -y netcat-openbsd && \
+    apt-get install -y --no-install-recommends netcat-openbsd && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/* 
 
-# RUN apt-get update
-# RUN apt-get install -y netcat-openbsd
-# RUN rm -rf /var/lib/apt/lists/*
+# Create a non-root user and set the appropriate permissions to start the app
+ARG USER=logger
+RUN useradd -m -s /bin/bash ${USER}
+COPY --chown=${USER}:${USER} . .
+USER ${USER}
 
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+RUN if [ -f wait_for_rabbitmq.sh ]; then chmod +x wait_for_rabbitmq.sh; fi
 
-# Copy your application code and the entry point script
-COPY . /app
-RUN chmod +x wait_for_rabbitmq.sh
+# The ENTRYPOINT remains the same
+ENTRYPOINT ["./wait_for_rabbitmq.sh"]
 
-ENTRYPOINT [ "./wait_for_rabbitmq.sh" ] 
-CMD ["python", "src/main.py"]  
-
+# The CMD remains the same
+CMD ["python", "src/main.py"]

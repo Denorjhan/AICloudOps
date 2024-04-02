@@ -3,7 +3,7 @@ from .docker_exec import ContainerPathDockerExecutor
 from autogen import ConversableAgent
 from autogen.coding import DockerCommandLineCodeExecutor
 from .k8s_exec import K8sCodeExecutor
-from .syntax_highlighting_agent import CustomConversableAgent
+from .custom_conversable_agent import CustomConversableAgent
 import os
 
 # from async_agent import AsyncAgent
@@ -20,17 +20,20 @@ def setup_proxy_agent():
         "auto_remove": True,
         "stop_container": True,
     }
-    running_in = os.getenv("RUNNING_IN")
+    # running_in = os.getenv("RUNNING_IN")
+    running_in = "docker"
+    execution_container = None
     try:
         if running_in == "docker":
             execution_container = ContainerPathDockerExecutor(**docker_config)
         elif running_in == "k8s":
             execution_container = K8sCodeExecutor()
         else:
-            execution_container = DockerCommandLineCodeExecutor()
+            execution_container = DockerCommandLineCodeExecutor() # original autogen execution method
     except Exception as e:
         print(f"Error setting up code execution container: {e}\n \
-            please provide a valid value for RUNNING_IN environment variable")    
+            please provide a valid value for RUNNING_IN environment variable")  
+          
     proxy_agent = CustomConversableAgent(
         name="proxy_agent",
         llm_config=AI_CONFIG,  # Disable LLM for code execution agent
