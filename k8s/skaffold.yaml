@@ -1,0 +1,29 @@
+apiVersion: skaffold/v4beta9
+kind: Config
+metadata:
+  name: project
+build:
+  artifacts:
+  - image: public.ecr.aws/c6w3t1p6/aicloudops-chatbot
+    context: aicloudops/chatbot
+    docker:
+      dockerfile: Dockerfile
+  - image: public.ecr.aws/c6w3t1p6/aicloudops-logger
+    context: aicloudops/logger
+    docker:
+      dockerfile: Dockerfile
+manifests:
+  rawYaml:
+  - storage/ai-code-pv.yaml
+  - storage/ai-code-pvc.yaml
+  - rbac/chatbot-rbac.yml
+  - rbac/exec-rbac.yml
+  - crd/clusoperator.yml
+  - crd/rabbit-cluster.yml
+  - crd/pg-cluster.yml
+  - deployments/chatbot-deployment.yaml
+  - deployments/logger-deployment.yml
+  - services/chatbot-service.yaml
+  - services/logger-service.yml
+  - ingress/chatbot-ingress.yaml
+  - ingress/nginx-ingress-controller.1.10.0.yaml
