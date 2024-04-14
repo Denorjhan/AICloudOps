@@ -1,29 +1,21 @@
-from typing import List, Optional, Union
+from typing import List, Union
 from pathlib import Path
 from kubernetes import client, config
 from kubernetes.client.rest import ApiException
-from autogen.coding import DockerCommandLineCodeExecutor
 from autogen.coding.base import CodeBlock, CommandLineCodeResult
 from autogen.coding.utils import _get_file_name_from_content
 
-import atexit
 from hashlib import md5
 import logging
-from pathlib import Path
 from time import sleep
 import uuid
-from typing import List, Union
 import datetime
 
-from autogen.coding.utils import _get_file_name_from_content
-from autogen.coding.base import CommandLineCodeResult
-from autogen.coding import DockerCommandLineCodeExecutor
-from modules.queue_producer import RabbitMQPublisher
+from rabbitmq_publisher import RabbitMQPublisher
 
-from autogen.code_utils import TIMEOUT_MSG, _cmd
-from autogen.coding.base import CodeBlock, CodeExecutor, CodeExtractor
+from autogen.code_utils import _cmd
+from autogen.coding.base import CodeExecutor, CodeExtractor
 from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor
-
 
 
 class K8sCodeExecutor(CodeExecutor):
@@ -44,21 +36,23 @@ class K8sCodeExecutor(CodeExecutor):
         config.load_incluster_config()
         self._api = client.BatchV1Api()
         self._core_api = client.CoreV1Api()
-        print(f"K8sCodeExecutor initialized with image {image}, namespace {namespace}, timeout {timeout}, work_dir {work_dir}")
-
+        print(
+            f"K8sCodeExecutor initialized with image {image}, namespace {namespace}, timeout {timeout}, work_dir {work_dir}"
+        )
 
     @property
     def code_extractor(self) -> CodeExtractor:
         """(Experimental) Export a code extractor that can be used by an agent."""
         return MarkdownCodeExtractor()
 
-
-    def execute_code_blocks(self, code_blocks: List[CodeBlock]) -> CommandLineCodeResult:
+    def execute_code_blocks(
+        self, code_blocks: List[CodeBlock]
+    ) -> CommandLineCodeResult:
         if len(code_blocks) == 0:
             raise ValueError("No code blocks to execute.")
 
         print(f"Executing {len(code_blocks)} code blocks...")
-        
+
         outputs = []
         files = []
         last_exit_code = 0
@@ -71,18 +65,18 @@ class K8sCodeExecutor(CodeExecutor):
                 # Check if there is a filename comment
                 filename = _get_file_name_from_content(code, Path("/tmp"))
                 file_uuid = uuid.uuid4()
-                if filename.endswith('.py'):
+                if filename.endswith(".py"):
                     filename = filename[:-3]  # Remove the .py extension
                 filename = f"{filename}_{file_uuid}.py"  # Append UUID and add .py back
             except ValueError:
-                return CommandLineCodeResult(exit_code=1, output="Filename is not in the workspace")
+                return CommandLineCodeResult(
+                    exit_code=1, output="Filename is not in the workspace"
+                )
 
             if filename is None:
                 # create a file with an automatically generated name
                 code_hash = md5(code.encode()).hexdigest()
                 filename = f"tmp_code_{code_hash}.{'py' if lang.startswith('python') else lang}"
-
-            
 
             code_path = self._work_dir / filename
             with code_path.open("w", encoding="utf-8") as fout:
@@ -99,7 +93,12 @@ class K8sCodeExecutor(CodeExecutor):
                                 client.V1Container(
                                     name="code-executor",
                                     image=self._image,
-                                    command=["timeout", str(self._timeout), _cmd(lang), filename],
+                                    command=[
+                                        "timeout",
+                                        str(self._timeout),
+                                        _cmd(lang),
+                                        filename,
+                                    ],
                                     working_dir="/tmp",
                                     env=[
                                         client.V1EnvVar(
@@ -107,19 +106,19 @@ class K8sCodeExecutor(CodeExecutor):
                                             value_from=client.V1EnvVarSource(
                                                 secret_key_ref=client.V1SecretKeySelector(
                                                     name="chatbot-env",
-                                                    key="AWS_ACCESS_KEY_ID"
+                                                    key="AWS_ACCESS_KEY_ID",
                                                 )
-                                            )
+                                            ),
                                         ),
                                         client.V1EnvVar(
                                             name="AWS_SECRET_ACCESS_KEY",
                                             value_from=client.V1EnvVarSource(
                                                 secret_key_ref=client.V1SecretKeySelector(
                                                     name="chatbot-env",
-                                                    key="AWS_SECRET_ACCESS_KEY"
+                                                    key="AWS_SECRET_ACCESS_KEY",
                                                 )
-                                            )
-                                        )
+                                            ),
+                                        ),
                                     ],
                                     volume_mounts=[
                                         client.V1VolumeMount(
@@ -132,7 +131,9 @@ class K8sCodeExecutor(CodeExecutor):
                             volumes=[
                                 client.V1Volume(
                                     name="code",
-                                    persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(claim_name="ai-code-pvc"),
+                                    persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
+                                        claim_name="ai-code-pvc"
+                                    ),
                                     # host_path=client.V1HostPathVolumeSource(path=str(self._work_dir)),
                                 )
                             ],
@@ -151,13 +152,17 @@ class K8sCodeExecutor(CodeExecutor):
                 print("Waiting for job completion...")
             except ApiException as e:
                 print(f"Failed to create job: {e}")
-                return CommandLineCodeResult(exit_code=1, output=f"Failed to create job: {e}")
+                return CommandLineCodeResult(
+                    exit_code=1, output=f"Failed to create job: {e}"
+                )
 
             # Wait for job completion and handle errors gracefully
             job_completed_successfully = False
             try:
                 while True:
-                    job_status = self._api.read_namespaced_job_status(job_name, self._namespace)
+                    job_status = self._api.read_namespaced_job_status(
+                        job_name, self._namespace
+                    )
                     if job_status.status.succeeded:
                         job_completed_successfully = True
                         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
@@ -172,8 +177,17 @@ class K8sCodeExecutor(CodeExecutor):
 
             # Retrieve pod name
             try:
-                pods = self._core_api.list_namespaced_pod(namespace=self._namespace, label_selector=f"job-name={job_name}")
-                pod_name = next((pod.metadata.name for pod in pods.items if pod.metadata.labels["job-name"] == job_name), None)
+                pods = self._core_api.list_namespaced_pod(
+                    namespace=self._namespace, label_selector=f"job-name={job_name}"
+                )
+                pod_name = next(
+                    (
+                        pod.metadata.name
+                        for pod in pods.items
+                        if pod.metadata.labels["job-name"] == job_name
+                    ),
+                    None,
+                )
             except ApiException as e:
                 outputs.append(f"Failed to list pods: {e}")
                 last_exit_code = 1
@@ -186,7 +200,9 @@ class K8sCodeExecutor(CodeExecutor):
 
             # Retrieve logs from the pod, including errors
             try:
-                pod_logs = self._core_api.read_namespaced_pod_log(name=pod_name, namespace=self._namespace)
+                pod_logs = self._core_api.read_namespaced_pod_log(
+                    name=pod_name, namespace=self._namespace
+                )
                 outputs.append(pod_logs)
             except ApiException as e:
                 outputs.append(f"Failed to read pod logs: {e}")
@@ -198,15 +214,18 @@ class K8sCodeExecutor(CodeExecutor):
 
             # Clean up job
             try:
-                self._api.delete_namespaced_job(name=job_name, namespace=self._namespace, propagation_policy='Background')
+                self._api.delete_namespaced_job(
+                    name=job_name,
+                    namespace=self._namespace,
+                    propagation_policy="Background",
+                )
                 print("Job deleted successfully")
             except ApiException as e:
                 logging.warning(f"Failed to delete job {job_name}: {e}")
-        
+
         execution_output = "\n".join(outputs)
-        
+
         with RabbitMQPublisher() as queue:
             queue.log_execution(str(code_path), last_exit_code, execution_output)
-            
-        return CommandLineCodeResult(exit_code=last_exit_code, output=execution_output)
 
+        return CommandLineCodeResult(exit_code=last_exit_code, output=execution_output)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 import atexit
 from hashlib import md5
-import logging
 from pathlib import Path
 from time import sleep
 from types import TracebackType
@@ -16,19 +15,21 @@ from autogen.coding.base import CommandLineCodeResult
 from autogen.coding import DockerCommandLineCodeExecutor
 
 from autogen.code_utils import TIMEOUT_MSG, _cmd
-from autogen.coding.base import CodeBlock, CodeExecutor, CodeExtractor
+from autogen.coding.base import CodeBlock, CodeExtractor
 from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor
 import sys
 import datetime
 import os
-from .queue_producer import RabbitMQPublisher
 
 if sys.version_info >= (3, 11):
     from typing import Self
 else:
     from typing_extensions import Self
 
-def _wait_for_ready(container: Container, timeout: int = 60, stop_time: int = 0.1) -> None:
+
+def _wait_for_ready(
+    container: Container, timeout: int = 60, stop_time: int = 0.1
+) -> None:
     elapsed_time = 0
     while container.status != "running" and elapsed_time < timeout:
         sleep(stop_time)
@@ -40,10 +41,11 @@ def _wait_for_ready(container: Container, timeout: int = 60, stop_time: int = 0.
     else:
         print("Sandbox environment created...")
 
+
 # def get_volume_name():
 #     name = os.getenv("VOLUME_NAME")
 #     return f"project_{name}" if name else "ai_code
-    
+
 
 class DockerCodeExecutor(DockerCommandLineCodeExecutor):
     def __init__(
@@ -54,7 +56,6 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
         container_work_dir: Union[Path, str] = Path("/tmp"),
         auto_remove: bool = True,
         stop_container: bool = True,
-
     ):
         """A custom code executor class that executes code through
         a command line environment in a Docker container, using a container path for volumes.
@@ -81,7 +82,7 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
         # Check if the image exists
         try:
             client.images.get(image)
-        except ImageNotFound as e:
+        except ImageNotFound:
             print(f"Image {image} not found locally. Attempting to pull...")
             try:
                 client.images.pull(image)
@@ -99,7 +100,7 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
         creds = {
             "AWS_ACCESS_KEY_ID": os.getenv("AWS_ACCESS_KEY_ID"),
             "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
-            "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION")
+            "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION"),
         }
         self._container = client.containers.create(
             image,
@@ -107,12 +108,12 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
             # entrypoint="/bin/sh",
             # tty=True,
             auto_remove=True,
-            volumes={str(volume_name):{"bind": str(container_work_dir), "mode": "rw"}},
+            volumes={str(volume_name): {"bind": str(container_work_dir), "mode": "rw"}},
             working_dir=str(container_work_dir),
-            environment=creds,        
+            environment=creds,
         )
         self._container.start()
- 
+
         _wait_for_ready(self._container)
 
         def cleanup():
@@ -131,7 +132,9 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
 
         # Check if the container is running
         if self._container.status != "running":
-            raise ValueError(f"Failed to start container from image {image}. Logs: {self._container.logs()}")
+            raise ValueError(
+                f"Failed to start container from image {image}. Logs: {self._container.logs()}"
+            )
 
         self._timeout = timeout
         self._work_dir: Path = container_work_dir
@@ -151,7 +154,9 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
         """(Experimental) Export a code extractor that can be used by an agent."""
         return MarkdownCodeExtractor()
 
-    def execute_code_blocks(self, code_blocks: List[CodeBlock]) -> CommandLineCodeResult:
+    def execute_code_blocks(
+        self, code_blocks: List[CodeBlock]
+    ) -> CommandLineCodeResult:
         """(Experimental) Execute the code blocks and return the result.
 
         Args:
@@ -164,7 +169,7 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
             raise ValueError("No code blocks to execute.")
 
         outputs = []
-        files = [] 
+        files = []
         last_exit_code = 0
         for code_block in code_blocks:
             lang = code_block.language
@@ -174,11 +179,13 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
                 # Check if there is a filename comment
                 filename = _get_file_name_from_content(code, Path("/tmp"))
                 file_uuid = uuid.uuid4()
-                if filename.endswith('.py'):
+                if filename.endswith(".py"):
                     filename = filename[:-3]  # Remove the .py extension
                 filename = f"{filename}_{file_uuid}.py"  # Append UUID and add .py back
             except ValueError:
-                return CommandLineCodeResult(exit_code=1, output="Filename is not in the workspace")
+                return CommandLineCodeResult(
+                    exit_code=1, output="Filename is not in the workspace"
+                )
 
             if filename is None:
                 # create a file with an automatically generated name
@@ -189,9 +196,10 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
             with code_path.open("w", encoding="utf-8") as fout:
                 fout.write(code)
 
+            # execute the code
             command = ["timeout", str(self._timeout), _cmd(lang), filename]
-
             result = self._container.exec_run(command)
+
             exit_code = result.exit_code
             output = result.output.decode("utf-8")
             if exit_code == 124:
@@ -204,24 +212,28 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
             last_exit_code = exit_code
             if exit_code != 0:
                 break
-            
+
         code_file = str(files[0]) if files else None
         code_output = "".join(outputs)
-        
-        exec_result = CommandLineCodeResult(exit_code=last_exit_code, output=code_output, code_file=code_file)
-        
+
+        exec_result = CommandLineCodeResult(
+            exit_code=last_exit_code, output=code_output, code_file=code_file
+        )
+
         print("EXECUTED AT: ", datetime.datetime.now(), "\n")
-        
+
         # with RabbitMQPublisher() as queue:
         #     queue.log_execution(code_file, last_exit_code, code_output)
-        
+
         return exec_result
 
     def restart(self) -> None:
         """(Experimental) Restart the code executor."""
         self._container.restart()
         if self._container.status != "running":
-            raise ValueError(f"Failed to restart container. Logs: {self._container.logs()}")
+            raise ValueError(
+                f"Failed to restart container. Logs: {self._container.logs()}"
+            )
 
     def stop(self) -> None:
         """(Experimental) Stop the code executor."""
@@ -231,7 +243,9 @@ class DockerCodeExecutor(DockerCommandLineCodeExecutor):
         return self
 
     def __exit__(
-        self, exc_type: Optional[Type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
+        self,
+        exc_type: Optional[Type[BaseException]],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[TracebackType],
     ) -> None:
         self.stop()
-

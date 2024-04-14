@@ -1,13 +1,12 @@
 import subprocess
-import tempfile
-from typing import Union, Dict, List
+from typing import Union, Dict
 from autogen.agentchat.conversable_agent import ConversableAgent, Agent
 from autogen.oai.client import OpenAIWrapper
 from termcolor import colored
-from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor, CodeBlock
+from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor
 
 
-class CustomConversableAgent(ConversableAgent):
+class AiCloudOpsConversableAgent(ConversableAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.code_extractor = MarkdownCodeExtractor()
@@ -16,7 +15,6 @@ class CustomConversableAgent(ConversableAgent):
         print(colored(sender.name, "yellow"), "(to", f"{self.name}):\n", flush=True)
         message = self._message_to_dict(message)
 
-        
         content = message.get("content")
         content = OpenAIWrapper.instantiate(
             content,
@@ -34,27 +32,34 @@ class CustomConversableAgent(ConversableAgent):
         print("\n", "-" * 80, flush=True, sep="")
 
     def _print_with_bat(self, content: str):
-        with tempfile.NamedTemporaryFile("w", delete=True) as tmpfile:
-            tmpfile.write(content)
-            tmpfile.flush()
-            subprocess.run(["bat", "--style=numbers,changes,grid", "--color=always", "--language=python", "--paging=never", tmpfile.name])
+        process = subprocess.Popen(
+            [
+                "bat",
+                "--style=numbers,changes,grid",
+                "--color=always",
+                "--language=python",
+                "--paging=never",
+            ],
+            stdin=subprocess.PIPE,
+        )
+        process.communicate(input=content.encode())
 
     def _message_to_dict(self, message: Union[Dict, str]) -> Dict:
         return message if isinstance(message, Dict) else {"content": message}
-    
+
     def get_human_input(self, prompt: str) -> str:
-            """Get human input.
+        """Get human input.
 
-            Override this method to customize the way to get human input.
+        Override this method to customize the way to get human input.
 
-            Args:
-                prompt (str): prompt for the human input.
+        Args:
+            prompt (str): prompt for the human input.
 
-            Returns:
-                str: human input.
-            """
-            # f"Please give feedback to {sender_name}. Press enter or type 'exit' to stop the conversation: "
-            msg = "Please provide feedback to the Code Writer Agent or press ENTER to execute the code or type 'exit' to stop the conversation: "
-            reply = input(msg) 
-            self._human_input.append(reply)
-            return reply
+        Returns:
+            str: human input.
+        """
+        # f"Please give feedback to {sender_name}. Press enter or type 'exit' to stop the conversation: "
+        msg = "Please provide feedback to the Code Writer Agent or press ENTER to execute the code or type 'exit' to stop the conversation: "
+        reply = input(msg)
+        self._human_input.append(reply)
+        return reply

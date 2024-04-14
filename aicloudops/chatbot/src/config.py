@@ -7,7 +7,11 @@ dotenv.load_dotenv()
 # Configuration for the LLM
 AI_CONFIG = {
     "config_list": [
-        {"model": os.environ["OPENAI_MODEL"], "api_key": os.environ["OPENAI_API_KEY"], "cache_seed": None}
+        {
+            "model": os.environ["OPENAI_MODEL"],
+            "api_key": os.environ["OPENAI_API_KEY"],
+            "cache_seed": None,
+        }
     ]
 }
 
@@ -28,4 +32,4 @@ In the following cases, suggest Python code (in a Python coding block) for the u
 
 
 # --- prompt testing ---
-#After generating and displaying the code, prompt the user to press 'ENTER' if they would like to execute the code.
+# After generating and displaying the code, prompt the user to press 'ENTER' if they would like to execute the code.

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 
 def display_welcome_message():
@@ -6,14 +7,11 @@ def display_welcome_message():
         'printf "\n***********************************************************\n" | lolcat',
         'figlet -f slant "AICloudOps" | lolcat',
         'printf "\tYour AI-driven AWS companion!\n" | lolcat',
-        'printf "\n***********************************************************\n\n" | lolcat'
+        'printf "\n***********************************************************\n\n" | lolcat',
     ]
     for command in commands:
-        os.system(command)  
+        os.system(command)
 
-
-# Create a directory for AI-generated code if it doesn't exist
-from pathlib import Path
 
 def create_code_directory(directory_name="aicode"):
     current_path = Path.cwd()
