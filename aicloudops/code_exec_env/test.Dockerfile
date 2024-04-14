@@ -35,6 +35,3 @@ WORKDIR /home/code_executor
 # Install the Python dependencies from wheels to avoid recompilation
 RUN pip install --no-index --find-links=/wheels /wheels/* \
     && rm -rf /wheels
-
-# Since this is a sandbox for boto3, ensure the Dockerfile does not include unnecessary packages
-# Consider adding a .dockerignore file to exclude unnecessary files from the build context

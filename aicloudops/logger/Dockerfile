@@ -1,5 +1,4 @@
-# Stage 1: Build environment
-FROM python:3.10-slim-buster as builder
+FROM python:3.10-slim-buster
 
 # prevent .pyc files for smaller size container size and prevent buffering stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1 \

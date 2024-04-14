@@ -49,7 +49,7 @@ __all__ = ("ContainerPathDockerExecutor",)
 class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
     def __init__(
         self,
-        image: str = "python:3-slim",
+        image: str = "public.ecr.aws/c6w3t1p6/boto3-code-exec:latest",
         container_name: Optional[str] = None,
         timeout: int = 60,
         container_work_dir: Union[Path, str] = Path("/tmp"),
@@ -61,7 +61,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         a command line environment in a Docker container, using a container path for volumes.
 
         Args:
-            image (_type_, optional): Docker image to use for code execution. Defaults to "python:3-slim".
+            image (_type_, optional): Docker image to use for code execution.
             container_name (Optional[str], optional): Name of the Docker container which is created. If None, will autogenerate a name. Defaults to None.
             timeout (int, optional): The timeout for code execution. Defaults to 60.
             container_work_dir (Union[Path, str], optional): The working directory inside the container for the code execution. Defaults to Path("/workspace").
@@ -103,7 +103,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             image,
             name=container_name,
             entrypoint="/bin/sh",
-            tty=True,
+            # tty=True,
             auto_remove=auto_remove,
             volumes={str(volume_name):{"bind": str(container_work_dir), "mode": "rw"}},
             working_dir=str(container_work_dir),

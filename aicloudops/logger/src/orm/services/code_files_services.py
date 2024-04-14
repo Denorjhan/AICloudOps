@@ -2,7 +2,7 @@ import hashlib
 from orm.database import Session
 from orm.models.code_files import CodeFiles
 
-
+#TODO: move method to utils dir
 def hash_file(file_path):
     try:
         print("Hashing file")

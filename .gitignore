@@ -147,3 +147,4 @@ aws/
 credentials
 .dev/
 .cursorignore
+temp_file.*
