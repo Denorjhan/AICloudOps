@@ -34,23 +34,22 @@ def _wait_for_ready(container: Container, timeout: int = 60, stop_time: int = 0.
         sleep(stop_time)
         elapsed_time += stop_time
         container.reload()
-        continue
     if container.status != "running":
+        print(f"Container {container.name} failed to start within {timeout} seconds.")
         raise ValueError("Container failed to start")
+    else:
+        print("Sandbox environment created...")
 
 # def get_volume_name():
 #     name = os.getenv("VOLUME_NAME")
-#     return f"project_{name}" if name else "ai_code"
+#     return f"project_{name}" if name else "ai_code
     
 
-__all__ = ("ContainerPathDockerExecutor",)
-
-
-class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
+class DockerCodeExecutor(DockerCommandLineCodeExecutor):
     def __init__(
         self,
         image: str = "public.ecr.aws/c6w3t1p6/boto3-code-exec:latest",
-        container_name: Optional[str] = None,
+        container_name: [str] = None,
         timeout: int = 60,
         container_work_dir: Union[Path, str] = Path("/tmp"),
         auto_remove: bool = True,
@@ -69,7 +68,7 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             stop_container (bool, optional): If true, will automatically stop the container when stop is called, when the context manager exits, or when the Python process exits with atexit. Defaults to True.
         """
 
-        print("Creating execution container...")
+        print("Creating sandbox environment...")
 
         if timeout < 1:
             raise ValueError("Timeout must be greater than or equal to 1.")
@@ -82,10 +81,14 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
         # Check if the image exists
         try:
             client.images.get(image)
-        except ImageNotFound:
-            logging.info(f"Pulling image {image}...")
-            # Let the docker exception escape if this fails.
-            client.images.pull(image)
+        except ImageNotFound as e:
+            print(f"Image {image} not found locally. Attempting to pull...")
+            try:
+                client.images.pull(image)
+                print(f"Successfully pulled image {image}.")
+            except ImageNotFound:
+                print(f"Failed to pull image {image}. Image not found in registry.")
+                raise
 
         if container_name is None:
             container_name = f"code-exec-{uuid.uuid4()}"
@@ -98,19 +101,17 @@ class ContainerPathDockerExecutor(DockerCommandLineCodeExecutor):
             "AWS_SECRET_ACCESS_KEY": os.getenv("AWS_SECRET_ACCESS_KEY"),
             "AWS_DEFAULT_REGION": os.getenv("AWS_DEFAULT_REGION")
         }
-        
         self._container = client.containers.create(
             image,
             name=container_name,
-            entrypoint="/bin/sh",
+            # entrypoint="/bin/sh",
             # tty=True,
-            auto_remove=auto_remove,
+            auto_remove=True,
             volumes={str(volume_name):{"bind": str(container_work_dir), "mode": "rw"}},
             working_dir=str(container_work_dir),
             environment=creds,        
         )
         self._container.start()
-        print("Execution container started...")
  
         _wait_for_ready(self._container)
 

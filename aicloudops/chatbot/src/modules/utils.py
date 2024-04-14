@@ -13,9 +13,11 @@ def display_welcome_message():
 
 
 # Create a directory for AI-generated code if it doesn't exist
+from pathlib import Path
+
 def create_code_directory(directory_name="aicode"):
-    current_path = os.getcwd()
-    full_path = os.path.join(current_path, directory_name)
-    if not os.path.exists(full_path):
-        raise OSError(f"Directory '{full_path}' does not exists.")
-    return full_path
+    current_path = Path.cwd()
+    full_path = current_path / directory_name
+    if not full_path.exists():
+        raise FileNotFoundError(f"Directory '{full_path}' does not exist.")
+    return str(full_path)

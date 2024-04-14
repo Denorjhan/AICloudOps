@@ -1,39 +1,25 @@
-# Use a Python 3.10 Alpine image as the base for a smaller footprint
-FROM python:3.10-alpine as builder
 
-# Install build dependencies for Python packages
-RUN apk add --no-cache \
-    gcc \
-    musl-dev \
-    libffi-dev \
-    openssl-dev \
-    cargo \
-    && python3 -m venv /venv
+#! NOTE: the WORKDIR is set during runtime when the app creates the container.
+FROM python:3.10-slim-bullseye
 
-# Set virtual environment as default
-ENV PATH="/venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/venv/bin:$PATH"
 
-# Install Python dependencies in .whl format to avoid recompilation
 COPY requirements.txt .
-RUN pip install --upgrade pip \
-    && pip wheel --no-cache-dir --wheel-dir=/wheels -r requirements.txt
 
-# Start a new stage from scratch for the final image
-FROM python:3.10-alpine
+# Activate the virtual environment and install the dependencies. 
+# Since the requirments.txt will not be changed frequently even in the dev environment, we can do this in one RUN command to minimize layers & image size.
+RUN python3 -m venv /venv \
+    && pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Create a non-root user for better security
-RUN adduser -D code_executor
+# Create a non-root user and set the appropriate permissions to start the app
+ARG USER=code_executor
+RUN useradd -m -s /bin/bash ${USER} \
+    && chown -R ${USER}:${USER} /venv
+USER ${USER}
 
-# Copy the built wheels from the previous stage
-COPY --from=builder /wheels /wheels
-COPY --from=builder /venv /venv
+CMD ["tail", "-f", "/dev/null"]
 
-# Change ownership of the wheels and virtual environment before switching to the non-root user
-RUN chown -R code_executor:code_executor /wheels /venv
 
-# Now switch to the non-root user
-USER code_executor
-WORKDIR /home/code_executor
-
-# Install the Python dependencies
-RUN pip install --no-index --find-links=/wheels /wheels/* 

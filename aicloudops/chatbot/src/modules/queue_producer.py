@@ -10,17 +10,6 @@ class RabbitMQPublisher:
         self.username = os.getenv('RABBITMQ_USERNAME') # Default username for RabbitMQ
         self.password = os.getenv('RABBITMQ_PASSWORD')  # Default password for RabbitMQ
 
-        print(self.username)
-        print(self.password)
-        print(self.host)
-        print(self.port)
-        # Setup the connection parameters with credentials
-        credentials = pika.PlainCredentials(self.username, self.password)
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host=self.host, port=self.port, credentials=credentials)
-        )
-        self.channel = self.connection.channel()
-        self.channel.queue_declare(queue=self.queue_name, durable=True)
 
     def publish(self, message: dict):
         """
@@ -55,7 +44,13 @@ class RabbitMQPublisher:
             self.connection.close()
             
     def __enter__(self):
-        return self
+        # Setup the connection parameters with credentials
+        credentials = pika.PlainCredentials(self.username, self.password)
+        self.connection = pika.BlockingConnection(
+            pika.ConnectionParameters(host=self.host, port=self.port, credentials=credentials)
+        )
+        self.channel = self.connection.channel()
+        self.channel.queue_declare(queue=self.queue_name, durable=True)
     
     def __exit__(self, exc_type, exc_value, traceback):
         self.close_connection()

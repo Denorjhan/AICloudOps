@@ -81,6 +81,8 @@ services:
     container_name: chatbot
     volumes:
       - ai_code:/tmp:nocopy
+      # Hot reload for dev env
+      - ./aicloudops/chatbot/src:/app/src
     tty: true
     stdin_open: true
     environment:
@@ -91,7 +93,7 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_DEFAULT_REGION: ${AWS_DEFAULT_REGION}
-      RUNNING_IN: ${RUNNING_IN}
+      RUNNING_IN: docker
     depends_on:
       - docker-proxy
       - rabbitmq

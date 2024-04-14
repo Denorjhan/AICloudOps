@@ -30,7 +30,7 @@ mv .env.example .env
 ### Step 3:
  Enter your AWS and OPENAI values into the `.env` file. (setting OPENAI_MODEL to gpt-3.5-turbo-0125 is a very cost-effective model and should keep costs under a few cents)
 
- When docker compose to run the project, the `RUNNING_IN` value should be set to `docker`.
+ When using docker compose to run the project, the `RUNNING_IN` value should be set to `docker`.
  
  The postgress and rabbitmq values can be left as is.
 
@@ -61,9 +61,8 @@ Once the project is running, the app will be available at http://localhost:8080.
 
 ## TODO:
 - [ ] Complete k8s manifests (configmaps, resource limits, liveness probes, tls ingress, etc.)
-- [ ] Optimize docker images (multistage builds, non-root user, etc)
 - [ ] Setup Prometheous & Grafana monitoring
 - [ ] Add Pytest for source code
-- [ ] CI/CD
+- [ ] Github Actions CI/CD
 - [ ] Docs (architecture, design desicions)
 

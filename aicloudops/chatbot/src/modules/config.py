@@ -4,8 +4,6 @@ import dotenv
 
 dotenv.load_dotenv()
 
-# ---------------- Your Static Configs ----------------
-
 # Configuration for the LLM
 AI_CONFIG = {
     "config_list": [
