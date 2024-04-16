@@ -9,8 +9,8 @@ from time import sleep
 import uuid
 import datetime
 
-from rabbitmq_publisher import RabbitMQPublisher
-from utils import code_block_to_file, validate_code_blocks
+from code_execution_publisher import CodeExecutionPublisher
+from utils import code_block_to_file, validate_code_blocks, create_msg_body
 
 from autogen.code_utils import _cmd
 from autogen.coding.base import CodeExecutor, CodeExtractor
@@ -193,9 +193,10 @@ class K8sCodeExecutor(CodeExecutor):
             logging.warning(f"Failed to delete job {job_name}: {e}")
 
         # send to logger service to be inserted into the database
-        queue = RabbitMQPublisher()
-        with queue:
-            queue.log_execution(file_path, exit_code, output)
+        publisher = CodeExecutionPublisher()
+        msg = create_msg_body(file_path, exit_code, output)
+        publisher.publish(msg)
+        publisher.close_connection()
 
         return CommandLineCodeResult(
             exit_code=exit_code, output=output, code_file=file_path
