@@ -30,7 +30,7 @@ class RabbitMQPublisher:
                 delivery_mode=pika.DeliveryMode.Persistent,
             ),
         )
-        print(f" [x] Sent '{message}' to queue '{self.queue_name}'")
+        print(f"[x] Sent '{message}' to queue '{self.queue_name}'")
 
     def log_execution(self, file_path: str, exit_code: int, output: str):
         # create a single dict from the params

@@ -148,3 +148,4 @@ credentials
 .dev/
 .cursorignore
 temp_file.*
+.ruff_cache/
