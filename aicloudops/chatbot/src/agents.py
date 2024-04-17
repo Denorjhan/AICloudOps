@@ -25,7 +25,7 @@ def setup_proxy_agent():
 
     proxy_agent = AiCloudOpsConversableAgent(
         name="proxy_agent",
-        llm_config=AI_CONFIG,  # Disable LLM for code execution agent
+        llm_config=AI_CONFIG,
         code_execution_config={"executor": execution_env()},
         human_input_mode="ALWAYS",
     )
