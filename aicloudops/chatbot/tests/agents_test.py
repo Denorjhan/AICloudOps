@@ -17,7 +17,7 @@ from src.config import AI_CONFIG, CODE_WRITER_SYSTEM_MESSAGE
 def test_valid_execution_env(env, executor_class):
     # Patch the specific executor class to be used in this test
     with patch.dict("os.environ", {"RUNNING_IN": env}), patch(
-        f"kubernetes.config.load_incluster_config", return_value=MagicMock()
+        "kubernetes.config.load_incluster_config", return_value=MagicMock()
     ):
         agent = setup_proxy_agent()
 
@@ -37,6 +37,27 @@ def test_invalid_execution_env():
     with patch("os.environ", {"RUNNING_IN": "invalid_env"}):
         with pytest.raises(Exception):
             setup_proxy_agent()
+
+
+@pytest.mark.parametrize(
+    "env",
+    [
+        "doCkEr",
+        "k8S",
+        "lOcAl",
+    ],
+)
+def test_proxy_agent_creation(env):
+    with patch.dict("os.environ", {"RUNNING_IN": env}), patch(
+        "kubernetes.config.load_incluster_config", return_value=MagicMock()
+    ):
+        agent = setup_proxy_agent()
+
+        # Ensure the correct executor instance in the agent's configuration
+        assert agent.__class__.__name__ == AiCloudOpsConversableAgent.__name__
+        assert agent.name == "proxy_agent"
+        assert agent.llm_config == AI_CONFIG
+        assert agent.human_input_mode == "ALWAYS"
 
 
 # test code writer agent creation

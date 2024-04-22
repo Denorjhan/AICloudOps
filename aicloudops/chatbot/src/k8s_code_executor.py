@@ -30,8 +30,6 @@ class K8sCodeExecutor(CodeExecutor):
         self._work_dir = Path(work_dir)
         self._image = image
         self._timeout = timeout
-        # config.load_kube_config()
-        # Use in-cluster configuration
         config.load_incluster_config()
         self._api = client.BatchV1Api()
         self._core_api = client.CoreV1Api()
