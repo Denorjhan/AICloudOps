@@ -6,9 +6,8 @@ def main():
     display_welcome_message()
     proxy_agent = setup_proxy_agent()
     code_writer_agent = setup_code_writer_agent()
-    user_prompt = input("Enter Your Prompt: ")
+    user_prompt = input("Enter Your Prompt")
     proxy_agent.initiate_chat(code_writer_agent, message=user_prompt)
-
 
 if __name__ == "__main__":
     main()
