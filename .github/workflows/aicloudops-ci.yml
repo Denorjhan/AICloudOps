@@ -81,14 +81,14 @@ jobs:
     - name: Format with Ruff
       uses: chartboost/ruff-action@v1
       with:
-        src: 'src'
+        src: 'aicloudops/${{ matrix.microservice }}/src'
         args: 'format --check'
 
     # lint check w/ ruff but dont make the changes
     - name: Lint with Ruff
       uses: chartboost/ruff-action@v1
       with:
-        src: 'src'
+        src: 'aicloudops/${{ matrix.microservice }}/src'
 
 
   unit-tests:
