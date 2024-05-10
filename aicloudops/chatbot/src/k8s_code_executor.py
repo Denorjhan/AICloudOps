@@ -109,7 +109,7 @@ class K8sCodeExecutor(CodeExecutor):
             ),
         )
 
-        exit_code=0
+        exit_code = 0
         # create the job
         try:
             self._api.create_namespaced_job(self._namespace, job)
