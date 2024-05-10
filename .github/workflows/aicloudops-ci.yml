@@ -27,7 +27,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Detect Changes
-      uses: dorny/paths-filter@v2
+      uses: dorny/paths-filter@v3
       id: filter
       with:
         base: ${{ github.ref }}
@@ -41,7 +41,7 @@ jobs:
         echo "${{ steps.filter.outputs.changes }}" > changes.json
 
     - name: Upload Changes to Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: aicloudops-detected-changes-${{ github.sha }}
         path: changes.json
@@ -52,7 +52,7 @@ jobs:
     needs: [detect-changes]
     strategy:
       matrix:
-        microservice: ${{ needs.detect-changes.outputs.microservices }}
+        microservice: ${{ fromJSON(needs.detect-changes.outputs.microservices) }}
     defaults:
       run:
         working-directory: .aicloudops/${{ matrix.microservice }}
