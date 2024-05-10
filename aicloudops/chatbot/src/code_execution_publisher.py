@@ -50,7 +50,6 @@ class CodeExecutionPublisher:
                 delivery_mode=pika.DeliveryMode.Persistent,
             ),
         )
-        print(f"[x] Sent '{message}' to queue '{self.queue_name}'")
 
     def close_connection(self):
         if self.connection and self.connection.is_open:

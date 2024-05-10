@@ -2,16 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: chatbot-ingress
+  namespace: app
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # namespace: ingress-nginx
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: nginx
   rules:
-  # - host: www.example.com
-  - http:
+  - host: localhost
+    http:
       paths:
-      - path: /deno(/|$)(.*)
+      - path: /app(/|$)(.*)
         pathType: Prefix
         backend:
           service:

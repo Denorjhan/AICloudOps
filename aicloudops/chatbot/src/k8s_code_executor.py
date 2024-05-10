@@ -21,7 +21,7 @@ class K8sCodeExecutor(CodeExecutor):
     def __init__(
         self,
         image: str = "public.ecr.aws/c6w3t1p6/boto3-code-exec:latest",
-        namespace: str = "default",
+        namespace: str = "app",
         timeout: int = 60,
         work_dir: Union[Path, str] = Path("/tmp"),
     ):
@@ -33,9 +33,6 @@ class K8sCodeExecutor(CodeExecutor):
         config.load_incluster_config()
         self._api = client.BatchV1Api()
         self._core_api = client.CoreV1Api()
-        print(
-            f"K8sCodeExecutor initialized with image {image}, namespace {namespace}, timeout {timeout}, work_dir {work_dir}"
-        )
 
     @property
     def code_extractor(self) -> CodeExtractor:
@@ -112,6 +109,7 @@ class K8sCodeExecutor(CodeExecutor):
             ),
         )
 
+        exit_code=0
         # create the job
         try:
             self._api.create_namespaced_job(self._namespace, job)
@@ -186,7 +184,6 @@ class K8sCodeExecutor(CodeExecutor):
                 namespace=self._namespace,
                 propagation_policy="Background",
             )
-            print("Job deleted successfully")
         except ApiException as e:
             logging.warning(f"Failed to delete job {job_name}: {e}")
 

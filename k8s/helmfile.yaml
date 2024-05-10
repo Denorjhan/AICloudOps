@@ -1,0 +1,61 @@
+repositories:
+- name: elastic
+  url: https://helm.elastic.co
+- name: prometheus-community
+  url: https://prometheus-community.github.io/helm-charts
+- name: nginx
+  url: https://kubernetes.github.io/ingress-nginx
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
+
+releases:
+- name: ingress-nginx
+  namespace: ingress
+  chart: ingress-nginx/ingress-nginx
+  version: "4.10.0"
+  values:
+  - values/nginx-values.yaml
+  needs:
+  - monitoring/prometheus
+  wait: true
+- name: rabbitmq-operator
+  namespace: rmqo
+  chart: bitnami/rabbitmq-cluster-operator
+  version: "4.2.5"
+- name: pgo
+  namespace: pgo
+  chart: oci://registry.developers.crunchydata.com/crunchydata/pgo
+  version: "5.5.1"
+- name: filebeat
+  namespace: elk
+  chart: elastic/filebeat
+  version: "7.17.3"
+  values:
+  - values/filebeat-values.yaml
+- name: logstash
+  namespace: elk
+  chart: elastic/logstash
+  version: "7.17.3"
+  values:
+  - values/logstash-values.yaml
+- name: elasticsearch
+  namespace: elk
+  chart: elastic/elasticsearch
+  version: "7.17.3"
+  values:
+  - values/elasticsearch-values.yaml
+- name: kibana
+  namespace: elk
+  chart: elastic/kibana
+  version: "7.17.3"
+  values:
+  - values/kibana-values.yaml
+  labels:
+    app: kibana
+- name: prometheus
+  namespace: monitoring
+  chart: prometheus-community/kube-prometheus-stack
+  version: "44.1.0"
+  values:
+  - values/prometheus-values.yml
+

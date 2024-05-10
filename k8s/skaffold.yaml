@@ -14,16 +14,22 @@ build:
       dockerfile: Dockerfile
 manifests:
   rawYaml:
-  - storage/ai-code-pv.yaml
-  - storage/ai-code-pvc.yaml
-  - rbac/chatbot-rbac.yml
-  - rbac/exec-rbac.yml
-  - crd/clusoperator.yml
-  - crd/rabbit-cluster.yml
-  - crd/pg-cluster.yml
-  - deployments/chatbot-deployment.yaml
-  - deployments/logger-deployment.yml
-  - services/chatbot-service.yaml
-  - services/logger-service.yml
-  - ingress/chatbot-ingress.yaml
-  - ingress/nginx-ingress-controller.1.10.0.yaml
+  - k8s/manifests/chatbot/chatbot-ingress.yaml
+  - k8s/manifests/chatbot/chatbot-deployment.yaml
+  - k8s/manifests/chatbot/chatbot-service.yaml
+  - k8s/manifests/logger/logger-deployment.yml
+  - k8s/manifests/logger/logger-service.yml
+
+  # - storage/ai-code-pv.yaml
+  # - storage/ai-code-pvc.yaml
+  # - rbac/chatbot-rbac.yml
+  # - rbac/exec-rbac.yml
+  # - crd/clusoperator.yml
+  # - crd/rabbit-cluster.yml
+  # - crd/pg-cluster.yml
+  # - deployments/chatbot-deployment.yaml
+  # - deployments/logger-deployment.yml
+  # - services/chatbot-service.yaml
+  # - services/logger-service.yml
+  # - ingress/chatbot-ingress.yaml
+  # - ingress/nginx-ingress-controller.1.10.0.yaml

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chatbot-deployment
+  namespace: app
   labels:
     app: chatbot
 spec:
@@ -22,13 +23,13 @@ spec:
         tty: true
         ports:
         - containerPort: 7681
-        # resources:
-        #   requests:
-        #     memory: 64Mi
-        #     cpu: 250m
-        #   limits:
-        #     memory: 128Mi
-        #     cpu: 500m
+        resources:
+          requests:
+            memory: 64Mi
+            cpu: 250m
+          limits:
+            memory: 128Mi
+            cpu: 500m
         env:
         - name: RABBITMQ_HOST
           valueFrom:
@@ -52,10 +53,11 @@ spec:
               key: password
         - name: VOLUME_NAME
           value: ai_code
-        - name: DOCKER_HOST
-          value: 'tcp://docker-proxy-svc:2375'
         - name: OPENAI_MODEL
-          value: gpt-3.5-turbo-0125
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env
+              key: OPENAI_MODEL
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
@@ -72,7 +74,12 @@ spec:
               name: chatbot-env
               key: AWS_SECRET_ACCESS_KEY
         - name: AWS_DEFAULT_REGION
-          value: ca-central-1
+          valueFrom:
+            secretKeyRef:
+              name: chatbot-env
+              key: AWS_DEFAULT_REGION
+        - name: RUNNING_IN
+          value: "k8s"
         volumeMounts:
         - name: code-files
           mountPath: /tmp

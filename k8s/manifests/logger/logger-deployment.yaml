@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: logger-deployment
+  namespace: app
   labels:
     app: logger
 spec:
@@ -19,13 +20,13 @@ spec:
         image: public.ecr.aws/c6w3t1p6/aicloudops-logger:latest
         ports:
         - containerPort: 80
-        # resources:
-        #   requests:
-        #     cpu: 500m
-        #     memory: 1Gi
-        #   limits:
-        #     cpu: 800m
-        #     memory: 1Gi
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 800m
+            memory: 1Gi
         env:
         - name: RABBITMQ_HOST
           valueFrom:
@@ -50,30 +51,28 @@ spec:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: chatbot-env
-              key: POSTGRES_USER
+              name: pg-cluster-pguser-logger-app
+              key: user
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: chatbot-env
-              key: POSTGRES_PASSWORD
+              name: pg-cluster-pguser-logger-app
+              key: password
         - name: POSTGRES_DB
           valueFrom:
             secretKeyRef:
-              name: chatbot-env
-              key: POSTGRES_DB
+              name: pg-cluster-pguser-logger-app
+              key: dbname
         - name: DB_HOST
-          value: pgcluster
-        - name: POSTGRES_REPLICATION_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: chatbot-env
-              key: POSTGRES_REPLICATION_PASSWORD
+              name: pg-cluster-pguser-logger-app
+              key: host
         - name: DB_PORT
           valueFrom:
             secretKeyRef:
-              name: chatbot-env
-              key: DB_PORT
+              name: pg-cluster-pguser-logger-app
+              key: port
         volumeMounts:
         - name: code-files
           mountPath: /tmp
