@@ -108,8 +108,12 @@ jobs:
         working-directory: aicloudops/${{ matrix.microservice }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    # - name: Checkout
+    #   uses: actions/checkout@v4
+
+    - name: print service
+      run: |
+        echo "${{ matrix.microservice }}"
 
   #   - name: Set up Python
   #     uses: actions/setup-python@v3
