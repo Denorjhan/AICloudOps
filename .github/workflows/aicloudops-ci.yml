@@ -40,7 +40,7 @@ jobs:
       run: |
         echo "${{ steps.filter.outputs.changes }}" > changes.json
 
-    - name: Upload Changes to Artifact
+    - name: Upload Changes Artifact
       uses: actions/upload-artifact@v4
       with:
         name: aicloudops-detected-changes-${{ github.sha }}
@@ -86,24 +86,26 @@ jobs:
       with:
         src: 'aicloudops/${{ matrix.microservice }}/src'
         args: 'format --check'
+        # continue-on-error: true
 
     # lint check w/ ruff but dont make the changes
     - name: Lint with Ruff
       uses: chartboost/ruff-action@v1
       with:
         src: 'aicloudops/${{ matrix.microservice }}/src'
+        # continue-on-error: true
 
 
-  # unit-tests:
-  #   name: PyTest
-  #   runs-on: ubuntu-latest
-  #   needs: lint-format-check
-  #   strategy:
-  #     matrix:
-  #       microservice: ${{ fromJSON(needs.detect-changes.outputs.microservices) }}
-  #   defaults:
-  #     run:
-  #       working-directory: aicloudops/${{ matrix.microservice }}
+  unit-tests:
+    name: PyTest
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    strategy:
+      matrix:
+        microservice: ${{ fromJSON(needs.detect-changes.outputs.microservices) }}
+    defaults:
+      run:
+        working-directory: aicloudops/${{ matrix.microservice }}
 
   #   steps:
   #   - name: Checkout
