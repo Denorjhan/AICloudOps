@@ -103,7 +103,7 @@ class AiCloudOpsConversableAgent(ConversableAgent):
                     num_messages_to_scan += 1
         num_messages_to_scan = min(len(messages), num_messages_to_scan)
         messages_to_scan = messages[-num_messages_to_scan:]
-        
+
         summary = None
         is_success = False
 
@@ -144,7 +144,6 @@ class AiCloudOpsConversableAgent(ConversableAgent):
             # found code blocks, execute code.
             code_results = self._code_executor.execute_code_blocks(code_blocks)
             exit_codes = [code_result.exit_code for code_result in code_results]
-            
 
             if all(code == 0 for code in exit_codes):
                 summary = "\nAll code blocks executed successfully.\n"
@@ -167,4 +166,3 @@ class AiCloudOpsConversableAgent(ConversableAgent):
             # print(summary)
 
         return is_success, summary
-

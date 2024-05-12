@@ -19,9 +19,9 @@ from autogen.coding import DockerCommandLineCodeExecutor
 def test_valid_execution_env(env, executor_class, exeutorType):
     # Mock the specific executor class to be used in this test
     with patch.dict("os.environ", {"RUNNING_IN": env}), patch(
-        f"src.agents.{executor_class}", return_value=MagicMock(name=executor_class, spec=exeutorType)
+        f"src.agents.{executor_class}",
+        return_value=MagicMock(name=executor_class, spec=exeutorType),
     ):
-
         agent = setup_proxy_agent()
 
         # Ensure the correct executor instance in the agent's configuration
@@ -33,8 +33,8 @@ def test_valid_execution_env(env, executor_class, exeutorType):
             == exeutorType.__name__
         )
         assert agent.human_input_mode == "ALWAYS"
-        
-        
+
+
 # test invalid execution env
 def test_invalid_execution_env():
     with patch("os.environ", {"RUNNING_IN": "invalid_env"}):
@@ -52,7 +52,8 @@ def test_invalid_execution_env():
 )
 def test_proxy_agent_creation(env, executor_class, executorType):
     with patch.dict("os.environ", {"RUNNING_IN": env}), patch(
-        f"src.agents.{executor_class}", return_value=MagicMock(name=executor_class, spec=executorType)
+        f"src.agents.{executor_class}",
+        return_value=MagicMock(name=executor_class, spec=executorType),
     ):
         agent = setup_proxy_agent()
 

@@ -10,4 +10,3 @@ def mock_proxy_agent():
 @pytest.fixture
 def mock_code_writer_agent():
     return MagicMock()
-
