@@ -150,6 +150,6 @@ jobs:
       uses: MishaKav/pytest-coverage-comment@main
       with:
         # pytest-coverage-path: junit/test-results-${{ matrix.python-version }}.xml
-        junitxml-path: junit/test-results-${{ matrix.python-version }}.xml
+        junitxml-path: aicloudops/${{ matrix.microservice }}/junit/test-results-${{ matrix.python-version }}.xml
 
 
