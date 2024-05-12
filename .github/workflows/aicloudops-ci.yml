@@ -153,6 +153,7 @@ jobs:
 
     - name: Pytest coverage comment
       uses: MishaKav/pytest-coverage-comment@main
+      id: coverageComment
       with:
         junitxml-path: aicloudops/${{ matrix.microservice }}/test-results-${{ matrix.python-version }}.xml
         pytest-xml-coverage-path: aicloudops/${{ matrix.microservice }}/coverage.xml
