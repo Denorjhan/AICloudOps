@@ -135,7 +135,7 @@ jobs:
       env:
         OPENAI_API_KEY: fake_openai_api_key
         OPENAI_MODEL: fake_model_name
-      run: pytest tests/ --junitxml=test-results-${{ matrix.python-version }}.xml --cov=src/ --cov-report=xml
+      run: pytest --junitxml=test-results-${{ matrix.python-version }}.xml --cov=src/ --cov-report=xml tests/
       continue-on-error: true
 
     # - name: Upload pytest test results
