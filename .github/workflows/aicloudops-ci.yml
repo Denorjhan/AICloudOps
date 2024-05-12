@@ -135,7 +135,7 @@ jobs:
       env:
         OPENAI_API_KEY: fake_openai_api_key
         OPENAI_MODEL: fake_model_name
-      run: pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
+      run: pytest tests/ --junitxml=test-results-${{ matrix.python-version }}.xml --cov=src/ --cov-report=xml
       continue-on-error: true
 
     # - name: Upload pytest test results
@@ -149,7 +149,7 @@ jobs:
     - name: Pytest coverage comment
       uses: MishaKav/pytest-coverage-comment@main
       with:
-        # pytest-coverage-path: junit/test-results-${{ matrix.python-version }}.xml
-        junitxml-path: aicloudops/${{ matrix.microservice }}/junit/test-results-${{ matrix.python-version }}.xml
+        junitxml-path: aicloudops/${{ matrix.microservice }}/test-results-${{ matrix.python-version }}.xml
+        pytest-xml-coverage-path: aicloudops/${{ matrix.microservice }}/coverage.xml
 
 
