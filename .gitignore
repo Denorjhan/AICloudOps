@@ -149,3 +149,4 @@ credentials
 .cursorignore
 temp_file.*
 .ruff_cache/
+junit/

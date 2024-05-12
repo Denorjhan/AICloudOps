@@ -40,7 +40,7 @@ jobs:
       run: |
         echo "${{ steps.filter.outputs.changes }}" > changes.json
 
-    - name: Upload Changes Artifact
+    - name: Upload Changed Microservices List
       uses: actions/upload-artifact@v4
       with:
         name: aicloudops-detected-changes-${{ github.sha }}
@@ -53,6 +53,7 @@ jobs:
     strategy:
       matrix:
         microservice: ${{ fromJSON(needs.detect-changes.outputs.microservices) }}
+        python-version: ['3.10']
     defaults:
       run:
         working-directory: aicloudops/${{ matrix.microservice }}
@@ -64,7 +65,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
-        python-version: '3.10'
+        python-version: ${{ matrix.python-version }}
         # cache: 'pip'
 
     - name: Cache Python Packages
@@ -85,7 +86,7 @@ jobs:
       uses: chartboost/ruff-action@v1
       with:
         src: 'aicloudops/${{ matrix.microservice }}/src'
-        args: 'format --check'
+        args: 'format --diff'
         # continue-on-error: true
 
     # lint check w/ ruff but dont make the changes
@@ -93,6 +94,7 @@ jobs:
       uses: chartboost/ruff-action@v1
       with:
         src: 'aicloudops/${{ matrix.microservice }}/src'
+        args: '--output-format github'
         # continue-on-error: true
 
 
@@ -103,43 +105,47 @@ jobs:
     strategy:
       matrix:
         microservice: ${{ fromJSON(needs.detect-changes.outputs.microservices) }}
+        python-version: ['3.10']
     defaults:
       run:
         working-directory: aicloudops/${{ matrix.microservice }}
 
     steps:
-    # - name: Checkout
-    #   uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: print service
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache Python Packages
+      uses: actions/cache@v4
+      with:
+        # cache the python location instead of just the .whl files for even faster installs
+        path: ${{ env.pythonLocation }}
+        key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+
+    - name: Install dependencies
       run: |
-        echo "${{ matrix.microservice }}"
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-  #   - name: Set up Python
-  #     uses: actions/setup-python@v3
-  #     with:
-  #       python-version: '3.10'
+    - name: Test with pytest
+      run: pytest tests/ --junitxml=junit/test-results-${{ matrix.python-version }}.xml
 
-  #   # - name: Cache Python packages
-  #   #   uses: actions/cache@v2
-  #   #   with:
-  #   #     path: ~/.cache/pip
-  #   #     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-  #   #     restore-keys: |
-  #   #       ${{ runner.os }}-pip-
+    # - name: Upload pytest test results
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: pytest-results-${{ matrix.python-version }}
+    #     path: junit/test-results-${{ matrix.python-version }}.xml
+    #   # Use always() to always run this step to publish test results when there are test failures
+    #   if: ${{ always() }}
 
-  #   - name: Install dependencies
-  #     run: |
-  #       python -m pip install --upgrade pip
-  #       pip install -r requirements.txt
+    - name: Pytest coverage comment
+      uses: MishaKav/pytest-coverage-comment@main
+      with:
+        # pytest-coverage-path: junit/test-results-${{ matrix.python-version }}.xml
+        junitxml-path: junit/test-results-${{ matrix.python-version }}.xml
 
-  #   - name: Run Tests
-  #     run: pytest --cov=./ --cov-report=xml
-
-  #   - name: Upload Test Coverage
-  #     uses: actions/upload-artifact@v4
-  #     with:
-  #       name: test-coverage-report
-  #       path: coverage.xml
-  #     if: ${{ always() }} # always run this line even if tests fail
 
