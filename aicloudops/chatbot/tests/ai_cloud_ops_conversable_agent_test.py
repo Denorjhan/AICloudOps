@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from src.ai_cloud_ops_conversable_agent import AiCloudOpsConversableAgent
 from autogen.agentchat.conversable_agent import Agent
 from autogen.coding.markdown_code_extractor import MarkdownCodeExtractor
-from autogen.coding import DockerCommandLineCodeExecutor
+from autogen.coding import LocalCommandLineCodeExecutor
 import subprocess
 
 
@@ -11,7 +11,7 @@ import subprocess
 def agent():
     return AiCloudOpsConversableAgent(
         name="Receiving Agent",
-        code_execution_config={"executor": DockerCommandLineCodeExecutor()},
+        code_execution_config={"executor": LocalCommandLineCodeExecutor()},
     )
 
 

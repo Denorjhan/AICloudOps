@@ -103,19 +103,23 @@ class AiCloudOpsConversableAgent(ConversableAgent):
                     num_messages_to_scan += 1
         num_messages_to_scan = min(len(messages), num_messages_to_scan)
         messages_to_scan = messages[-num_messages_to_scan:]
-
+        
         summary = None
         is_success = False
 
+        print("################")
         # iterate through the last n messages in reverse
         # if code blocks are found, execute the code blocks and return the output
         # if no code blocks are found, continue
         for message in reversed(messages_to_scan):
+            print(message)
             if not message["content"]:
                 continue
+            print(self._code_executor.code_extractor, "\nexec:", self._code_executor)
             code_blocks = self._code_executor.code_extractor.extract_code_blocks(
                 message["content"]
             )
+            print(len(code_blocks))
             if len(code_blocks) == 0:
                 continue
 
@@ -140,6 +144,7 @@ class AiCloudOpsConversableAgent(ConversableAgent):
             # found code blocks, execute code.
             code_results = self._code_executor.execute_code_blocks(code_blocks)
             exit_codes = [code_result.exit_code for code_result in code_results]
+            
 
             if all(code == 0 for code in exit_codes):
                 summary = "\nAll code blocks executed successfully.\n"
@@ -162,3 +167,4 @@ class AiCloudOpsConversableAgent(ConversableAgent):
             # print(summary)
 
         return is_success, summary
+
