@@ -151,6 +151,7 @@ jobs:
     #   # Use always() to always run this step to publish test results when there are test failures
     #   if: ${{ always() }}
 
+
     - name: Pytest coverage comment
       uses: MishaKav/pytest-coverage-comment@main
       id: coverageComment
@@ -159,16 +160,4 @@ jobs:
         pytest-xml-coverage-path: aicloudops/${{ matrix.microservice }}/coverage.xml
 
     - name: Check the output coverage
-      run: |
-        echo "Coverage Percantage - ${{ steps.coverageComment.outputs.coverage }}"
-        echo "Coverage Color - ${{ steps.coverageComment.outputs.color }}"
-        echo "Coverage Html - ${{ steps.coverageComment.outputs.coverageHtml }}"
-        echo "Coverage Warnings - ${{ steps.coverageComment.outputs.warnings }}"
-        echo "Coverage Errors - ${{ steps.coverageComment.outputs.errors }}"
-        echo "Coverage Failures - ${{ steps.coverageComment.outputs.failures }}"
-        echo "Coverage Skipped - ${{ steps.coverageComment.outputs.skipped }}"
-        echo "Coverage Tests - ${{ steps.coverageComment.outputs.tests }}"
-        echo "Coverage Time - ${{ steps.coverageComment.outputs.time }}"
-        echo "Not Success Test Info - ${{ steps.coverageComment.outputs.notSuccessTestInfo }}"
-
-
+      run: "echo \"## Test Coverage Results 📊\" >> $GITHUB_STEP_SUMMARY\necho \"\" >> $GITHUB_STEP_SUMMARY\necho \"- **Coverage Percentage:** ${{ steps.coverageComment.outputs.coverage }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Coverage Color:** ${{ steps.coverageComment.outputs.color }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Coverage Warnings:** ${{ steps.coverageComment.outputs.warnings }}\" >> $GITHUB_STEP_SUMMARY \necho \"- **Coverage Errors:** ${{ steps.coverageComment.outputs.errors }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Coverage Failures:** ${{ steps.coverageComment.outputs.failures }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Tests Skipped:** ${{ steps.coverageComment.outputs.skipped }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Total Tests:** ${{ steps.coverageComment.outputs.tests }}\" >> $GITHUB_STEP_SUMMARY\necho \"- **Test Duration:** ${{ steps.coverageComment.outputs.time }}\" >> $GITHUB_STEP_SUMMARY\necho \"\" >> $GITHUB_STEP_SUMMARY\necho \"### Unsuccessful Tests\" >> $GITHUB_STEP_SUMMARY\necho \"\\`\\`\\`\" >> $GITHUB_STEP_SUMMARY \necho \"${{ steps.coverageComment.outputs.notSuccessTestInfo }}\" >> $GITHUB_STEP_SUMMARY\necho \"\\`\\`\\`\" >> $GITHUB_STEP_SUMMARY\necho \"\" >> $GITHUB_STEP_SUMMARY\necho \"${{ steps.coverageComment.outputs.coverageHtml }}\" >> $GITHUB_STEP_SUMMARY\n#magic___^_^___line\n#magic___^_^___line\n"
