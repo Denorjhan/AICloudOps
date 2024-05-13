@@ -12,4 +12,4 @@ if __name__ == "__main__":
         init_db()
         main()
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"An error occurred : {e}")
