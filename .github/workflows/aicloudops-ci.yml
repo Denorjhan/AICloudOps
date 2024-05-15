@@ -174,6 +174,9 @@ jobs:
       with:
         registry-type: public
 
+    - name: Print ECR Registry
+      run: 'echo "ECR Registry: ${{ steps.login-ecr-public.outputs.registry }}"'
+
     - name: Build and Push ECR Public
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
