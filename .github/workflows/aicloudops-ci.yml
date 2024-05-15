@@ -4,9 +4,9 @@ on:
   push:
     branches:
     - main
-    paths:
-    - 'aicloudops/chatbot/**'
-    - 'aicloudops/logger/*'
+    # paths:
+    # - 'aicloudops/chatbot/**'
+    # - 'aicloudops/logger/*'
   pull_request:
     branches:
     - main
