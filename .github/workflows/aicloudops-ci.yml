@@ -1,24 +1,19 @@
 name: AICloudOps - CI
 
 on:
+  push:
+    branches:
+    - main
+    paths:
+    - 'aicloudops/chatbot/**'
+    - 'aicloudops/logger/*'
+  pull_request:
+    branches:
+    - main
+    paths:
+    - 'aicloudops/chatbot/**'
+    - 'aicloudops/logger/*'
   workflow_dispatch:
-    push:
-      branches:
-      - main
-      paths:
-      - 'aicloudops/chatbot/**'
-      - 'aicloudops/logger/*'
-      # paths-ignore:
-      # - '**/*.md'
-
-    pull_request:
-      branches:
-      - main
-      paths:
-      - 'aicloudops/chatbot/**'
-      - 'aicloudops/logger/*'
-      paths-ignore:
-      - '**/*.md'
 
 # permissions:
 #   contents: write
