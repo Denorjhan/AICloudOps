@@ -154,7 +154,7 @@ jobs:
   build:
     name: Build and Push Docker Containers to ECR Public
     runs-on: ubuntu-latest
-    # needs: [lint-format-check, unit-tests]
+    needs: [lint-format-check, unit-tests]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -174,12 +174,9 @@ jobs:
       with:
         registry-type: public
 
-    - name: Print ECR Registry
-      run: 'echo "ECR Registry: ${{ steps.login-ecr-public.outputs.registry }}"'
-
     - name: Build and Push ECR Public
       env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         ECR_REPOSITORY: aicloudops-chatbot #! remove hard coded value
         IMAGE_TAG: ${{ github.sha }}
       run: |
